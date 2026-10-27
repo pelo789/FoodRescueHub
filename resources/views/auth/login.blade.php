@@ -4,117 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
+    <!-- This links your app.css with all Tailwind utilities compiled -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            width: 100%;
-            max-width: 400px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px #00000015;
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        label {
-            display: block;
-            margin-top: 15px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 6px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            margin-top: 20px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        .success {
-            color: green;
-            text-align: center;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-        }
-
-        p {
-            text-align: center;
+    <style type="text/tailwindcss">
+        @theme {
+            --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
         }
     </style>
 </head>
 
-<body>
+<body class="flex min-h-screen items-center justify-center bg-[#f4f6f9] p-5 font-sans">
+<!-- Container styles -->
+    <div class="w-full max-w-100 rounded-lg bg-white p-8 shadow-[0_4px_15px_rgba(0,0,0,0.08)]">
+        <h2 class="text-center text-2xl font-bold text-gray-800">Login</h2>
 
-<div class="container">
+        @if (session('success'))
+            <p class="mt-4 text-center text-green-600 font-medium">{{ session('success') }}</p>
+        @endif
 
-    <h2>Login</h2>
+        @if ($errors->any())
+            <p class="mt-4 text-center text-red-600 font-medium">{{ $errors->first() }}</p>
+        @endif
 
-    @if (session('success'))
-        <p class="success">{{ session('success') }}</p>
-    @endif
+        <form method="POST" action="{{ route('login.submit') }}">
+            @csrf
 
-    @if ($errors->any())
-        <p class="error">{{ $errors->first() }}</p>
-    @endif
+            <label for="email" class="mt-3.75 block text-sm font-medium text-gray-700">Email Address</label>
+            <input type="email"
+                   id="email"
+                   name="email"
+                   value="{{ old('email') }}"
+                   required placeholder="Enter your email address"
+                   class="mt-1.5 block w-full rounded-[5px] border border-[#ccc] p-3 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none">
 
-    <form method="POST" action="{{ route('login.submit') }}">
-        @csrf
+            <label for="password" class="mt-3.75 block text-sm font-medium text-gray-700">Password</label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   required placeholder="Enter your password"
+                   class="mt-1.5 block w-full rounded-[5px] border border-[#ccc] p-3 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none">
 
-        <label>Email Address</label>
-        <input type="email"
-               name="email"
-               value="{{ old('email') }}"
-               required>
+            <button type="submit" 
+                class="mt-5 w-full cursor-pointer rounded-[5px] bg-[#2563eb] p-3 text-base font-semibold text-white transition-colors duration-200 hover:bg-[#1d4ed8]">
+                LOGIN
+            </button>
+        </form>
 
-        <label>Password</label>
-        <input type="password"
-               name="password"
-               required>
-
-        <button type="submit">Login</button>
-    </form>
-
-    <p>
-        Don't have an account?
-        <a href="{{ route('register') }}">Register</a>
-    </p>
-
-</div>
-
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Don't have an account?
+            <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:underline">Register</a>
+        </p>
+    </div>
 </body>
 </html>
