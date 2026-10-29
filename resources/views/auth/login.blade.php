@@ -46,14 +46,14 @@
                    class="mt-1.5 block w-full rounded-[5px] border border-[#ccc] p-3 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none">
 
             <button type="submit" 
-                class="mt-5 w-full cursor-pointer rounded-[5px] bg-[#2563eb] p-3 text-base font-semibold text-white transition-colors duration-200 hover:bg-[#1d4ed8]">
+                class="mt-5 w-full cursor-pointer rounded-[5px] bg-[#2E7D32] p-3 text-base font-semibold text-white transition-colors duration-200 hover:bg-[#66BB6A]">
                 LOGIN
             </button>
         </form>
 
         <p class="mt-6 text-center text-sm text-gray-600">
             Don't have an account?
-            <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:underline">Register</a>
+            <a href="{{ route('register') }}" class="font-medium text-green-600 hover:underline">Register</a>
         </p>
     </div>
 </body>
