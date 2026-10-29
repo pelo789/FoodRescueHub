@@ -15,17 +15,59 @@
 </head>
 
 <body class="flex min-h-screen bg-[#f4f6f9] font-sans overflow-x-hidden">
-
+    <!-- BRANDING HEADER: Positioned at the top of the entire page, above both sections -->
+        <header class="absolute top-0 left-0 w-full z-50 p-6 flex items-center gap-3 bg-white/70 backdrop-blur-md border-b border-gray-200/50 md:bg-transparent md:backdrop-blur-none md:border-none">
+        
+        <!-- SVG Icon (Placeholder Logo) -->
+        <!-- The 'md:text-white' utility class updates the icon color on desktop screens to match the green panel text color -->
+        <!-- SYSTEM LOGO: Seamless Fusion of a Leaf and Food (Fork/Plant hybrid) -->
+         <!-- Temporary SVG logo for demonstration purposes. This will be replaced with the actual logo image or SVG as needed. -->
+        <svg class="h-8 w-8 text-[#2E7D32] md:text-white transition-transform duration-300 hover:scale-105" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor" 
+            stroke-width="2" 
+            stroke-linecap="round" 
+            stroke-linejoin="round">
+            <!-- Outer Leaf Contour Silhouette -->
+            <path d="M12 2C6.5 2 3 7.5 3 13c0 4.5 3.5 8 9 9 5.5-1 9-4.5 9-9 0-5.5-3.5-11-9-11z" />
+            
+            <!-- Central Leaf Vein acting as the Fork Handle / Stem -->
+            <path d="M12 2v20" />
+            
+            <!-- Left and Right Inner Leaf Detail / Fork Outer Tines -->
+            <path d="M8 9.5a4 4 0 0 0 4 3.5 4 4 0 0 0 4-3.5" />
+            
+            <!-- Central Fork Tine Details branching like micro-veins -->
+            <path d="M10 9.5v3" />
+            <path d="M14 9.5v3" />
+        </svg>
+        
+        <!-- <img src="/path-to-logo.png" alt="Logo" class="h-8 w-auto"> -->
+        
+        <!-- System Name: FoodRescueHub -->
+        <span class="text-2xl sm:text-3xl font-bold text-gray-800 md:text-white tracking-wide">FoodRescueHub</span>
+    
+        </header>
     <!-- MAIN WRAPPER: Combines both sections side-by-side -->
     <div class="flex w-full min-h-screen">
+        <!-- LEFT CONTAINER: This section takes up 3/5ths of the screen on desktop and is hidden on mobile -->
+<div class="hidden md:flex md:w-3/5 p-16 flex-col justify-center text-white relative overflow-hidden">
+    
+    <!-- This image is pinned STRICTLY inside this left box and won't bleed to the right side -->
+    <img src="{{ asset('images/food_distribution.jpeg') }}" 
+         alt="Community food sharing" 
+         class="absolute inset-0 h-full w-full object-cover z-0">
+    
+    <!-- Translucent sheet that darkens ONLY the left side photo -->
+    <div class="absolute inset-0 bg-black/60 z-10"></div>
 
-       <!-- LEFT CONTAINER: For branding, info, or imagery -->
-        <div class="hidden md:flex md:w-3/5 bg-[#2E7D32] p-16 flex-col justify-center text-white">
-            <div class="max-w-md mx-auto">
-                <h1 class="text-4xl font-bold mb-4">Welcome to Our Platform</h1>
-                <p class="text-lg text-green-100">Manage your projects, connect with teams, and streamline your workflow effortlessly.</p>
-            </div>
-        </div>
+    <!-- Welcome text floating safely over the left image -->
+    <div class="max-w-md mx-auto relative z-20">
+        <h1 class="text-4xl font-bold mb-4">Welcome to Our Platform</h1>
+        <p class="text-lg text-green-100">Manage your projects, connect with teams, and streamline your workflow effortlessly.</p>
+    </div>
+</div>
 
     <!-- RIGHT CONTAINER: For the login form -->
     <div class="w-full md:w-2/5 bg-white p-8 sm:p-16 flex flex-col justify-center items-center">
