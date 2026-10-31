@@ -9,7 +9,8 @@
 
 <body>
 
-<div class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<div class="bg-[linear-gradient(to_bottom,rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('images/food_distribution.jpeg')] bg-cover bg-center min-h-screen flex items-center justify-center p-4">
+  <!-- Your content goes here and stays fully visible -->
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
 
     <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Register</h2>
@@ -82,14 +83,15 @@
                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
 
         <!-- Submit button -->
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition-colors duration-200">REGISTER</button>
+        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition-colors duration-200">REGISTER</button>
     </form>
 
     <!-- Footer Links -->
     <div class="mt-6 text-center text-sm text-gray-600">
         Already have an account?
-        <a href="{{ route('login') }}" class="text-blue-600 font-medium hover:underline">Login</a>
+        <a href="{{ route('login') }}" class="text-green-800 font-medium hover:underline">Login</a>
     </div>
+</div>
 </div>
 </div>
 
