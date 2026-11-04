@@ -23,15 +23,21 @@ class AuthController extends Controller
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
             'email' => 'required|email|max:150|unique:users,email',
+
             'password' => [
                 'required',
                 'confirmed',
                 Password::min(8),
             ],
+
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
+
+            // VALIDATE SELECTED ROLE
+            'role' => 'required|in:Administrator,Food Provider,Recipient Organization',
         ]);
 
+        // CREATE USER WITH SELECTED ROLE
         User::create([
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
@@ -39,6 +45,9 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
             'address' => $validated['address'] ?? null,
+
+            // SAVE THE SELECTED ROLE
+            'role' => $validated['role'],
         ]);
 
         return redirect()->route('login')
