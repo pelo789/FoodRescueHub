@@ -1,6 +1,7 @@
-
 @php
-    $user = auth()->user();
+    use Illuminate\Support\Facades\Auth;
+
+    $user = Auth::user();
 
     $role = strtolower(str_replace(' ', '_', trim($user->role ?? '')));
 
@@ -182,28 +183,36 @@
             <div class="stats">
                 <div class="stat-box">
                     <h3>Total Organizations</h3>
-                    <p>0</p>
+                    <p>{{ $totalOrganizations ?? 0 }}</p>
                 </div>
 
                 <div class="stat-box">
                     <h3>Pending Verifications</h3>
-                    <p>0</p>
+                    <p>{{ $pendingVerifications ?? 0 }}</p>
                 </div>
 
                 <div class="stat-box">
                     <h3>Active Food Listings</h3>
-                    <p>0</p>
+                    <p>{{ $activeListings ?? 0 }}</p>
                 </div>
 
                 <div class="stat-box">
                     <h3>Completed Redistributions</h3>
-                    <p>0</p>
+                    <p>{{ $completedRedistributions ?? 0 }}</p>
                 </div>
             </div>
 
             <div class="section">
                 <h3>Recent System Activities</h3>
-                <p>No recent activities available.</p>
+                @isset($recentActivities)
+                    @forelse($recentActivities as $activity)
+                        <p>{{ $activity->description ?? $activity->action }} ({{ $activity->created_at }})</p>
+                    @empty
+                        <p>No recent activities available.</p>
+                    @endforelse
+                @else
+                    <p>No recent activities available.</p>
+                @endisset
             </div>
 
         {{-- FOOD PROVIDER DASHBOARD --}}
@@ -214,28 +223,36 @@
             <div class="stats">
                 <div class="stat-box">
                     <h3>Active Food Listings</h3>
-                    <p>0</p>
+                    <p>{{ $activeListings ?? 0 }}</p>
                 </div>
 
                 <div class="stat-box">
                     <h3>Pending Requests</h3>
-                    <p>0</p>
+                    <p>{{ $pendingRequests ?? 0 }}</p>
                 </div>
 
                 <div class="stat-box">
                     <h3>Food Nearing Expiration</h3>
-                    <p>0</p>
+                    <p>{{ $expiringListings ?? 0 }}</p>
                 </div>
 
                 <div class="stat-box">
                     <h3>Upcoming Pickups</h3>
-                    <p>0</p>
+                    <p>{{ $upcomingPickups ?? 0 }}</p>
                 </div>
             </div>
 
             <div class="section">
                 <h3>Recent Food Listings</h3>
-                <p>No food listings available.</p>
+                @isset($recentListings)
+                    @forelse($recentListings as $listing)
+                        <p>{{ $listing->name }} - Qty: {{ $listing->quantity }} (Exp: {{ $listing->expiration_date }})</p>
+                    @empty
+                        <p>No food listings available.</p>
+                    @endforelse
+                @else
+                    <p>No food listings available.</p>
+                @endisset
             </div>
 
         {{-- RECIPIENT ORGANIZATION DASHBOARD --}}
@@ -246,28 +263,36 @@
             <div class="stats">
                 <div class="stat-box">
                     <h3>Available Food Listings</h3>
-                    <p>0</p>
+                    <p>{{ $availableListings ?? 0 }}</p>
                 </div>
 
                 <div class="stat-box">
                     <h3>My Submitted Requests</h3>
-                    <p>0</p>
+                    <p>{{ $myRequests ?? 0 }}</p>
                 </div>
 
                 <div class="stat-box">
                     <h3>Approved Requests</h3>
-                    <p>0</p>
+                    <p>{{ $approvedRequests ?? 0 }}</p>
                 </div>
 
                 <div class="stat-box">
                     <h3>Upcoming Pickups</h3>
-                    <p>0</p>
+                    <p>{{ $upcomingPickups ?? 0 }}</p>
                 </div>
             </div>
 
             <div class="section">
                 <h3>Recent Requests</h3>
-                <p>No requests available.</p>
+                @isset($recentRequests)
+                    @forelse($recentRequests as $request)
+                        <p>Request #{{ $request->id }} - Status: {{ $request->status }}</p>
+                    @empty
+                        <p>No requests available.</p>
+                    @endforelse
+                @else
+                    <p>No requests available.</p>
+                @endisset
             </div>
 
         @else
