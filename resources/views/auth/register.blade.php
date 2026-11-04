@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,19 +122,19 @@
                         Select your role
                     </option>
 
-                    <option value="Primary Operator"
-                        {{ old('role') == 'Primary Operator' ? 'selected' : '' }}>
-                        Primary Operator
+                    <option value="Administrator"
+                        {{ old('role') == 'Administrator' ? 'selected' : '' }}>
+                        Administrator
                     </option>
 
-                    <option value="Stakeholder"
-                        {{ old('role') == 'Stakeholder' ? 'selected' : '' }}>
-                        Stakeholder
+                    <option value="Food Provider"
+                        {{ old('role') == 'Food Provider' ? 'selected' : '' }}>
+                        Food Provider
                     </option>
 
-                    <option value="End Beneficiary"
-                        {{ old('role') == 'End Beneficiary' ? 'selected' : '' }}>
-                        End Beneficiary
+                    <option value="Recipient Organization"
+                        {{ old('role') == 'Recipient Organization' ? 'selected' : '' }}>
+                        Recipient Organization
                     </option>
 
                 </select>
