@@ -45,34 +45,259 @@
         
         <!-- <img src="/path-to-logo.png" alt="Logo" class="h-8 w-auto"> -->
         
-        <!-- System Name: FoodRescueHub -->
-        <span class="text-2xl sm:text-3xl font-bold text-gray-800 md:text-white tracking-wide">FoodRescueHub</span>
+        <!-- System Name: FoodRescue Hub -->
+        <span class="text-2xl sm:text-3xl font-bold text-gray-800 md:text-white tracking-wide">FoodRescue Hub</span>
     
         </header>
+
     <!-- MAIN WRAPPER: Combines both sections side-by-side -->
     <div class="flex w-full min-h-screen">
-        <!-- LEFT CONTAINER: This section takes up 3/5ths of the screen on desktop and is hidden on mobile -->
-<div class="hidden md:flex md:w-3/5 p-16 flex-col justify-center text-white relative overflow-hidden">
-    
-    <!-- This image is pinned STRICTLY inside this left box and won't bleed to the right side -->
-    <img src="{{ asset('images/food_distribution.jpeg') }}" 
-         alt="Community food sharing" 
-         class="absolute inset-0 h-full w-full object-cover z-0">
-    
-    <!-- Translucent sheet that darkens ONLY the left side photo -->
-    <div class="absolute inset-0 bg-black/60 z-10"></div>
+        <!-- LEFT CONTAINER -->
+<div class="hidden md:block md:w-3/5 relative h-screen overflow-hidden">
 
-    <!-- Welcome text floating safely over the left image -->
-    <div class="max-w-md mx-auto relative z-20">
-        <h1 class="text-4xl font-bold mb-4">Welcome to Our Platform</h1>
-        <p class="text-lg text-green-100">Manage your projects, connect with teams, and streamline your workflow effortlessly.</p>
+    <!-- BACKGROUND IMAGE -->
+    <img
+        src="{{ asset('images/food_distribution.jpeg') }}"
+        alt="Community food sharing"
+        class="absolute inset-0 w-full h-full object-cover z-0">
+
+    <!-- DARK OVERLAY -->
+    <div class="absolute inset-0 bg-black/70 z-10"></div>
+
+    <!-- SCROLLABLE CONTENT -->
+    <div
+        class="relative z-20 h-screen overflow-y-scroll snap-y snap-mandatory">
+
+        <!-- SECTION 1 -->
+        <section class="h-screen snap-start flex items-center">
+            <div class="px-16 max-w-2xl">
+
+                <h1 class="text-6xl font-bold text-white leading-tight">
+                    Reduce Food Waste.
+                    <br>
+                    Support Communities.
+                </h1>
+
+                <p class="mt-6 text-lg text-green-100">
+                    FoodRescue Hub helps organizations manage surplus food
+                    and connect with verified community partners through an
+                    organized redistribution platform.
+                </p>
+
+            </div>
+        </section>
+
+        <!-- SECTION 2 -->
+        <section class="h-screen snap-start flex items-center">
+
+            <div class="px-16 max-w-2xl">
+
+                <h2 class="text-4xl font-bold text-white mb-6">
+                    About FoodRescue Hub
+                </h2>
+
+                <p class="text-lg text-green-100 leading-relaxed">
+                    Many organizations still rely on phone calls,
+                    spreadsheets, and social media to coordinate
+                    surplus food distribution.
+                </p>
+
+                <p class="mt-4 text-lg text-green-100 leading-relaxed">
+                    FoodRescue Hub provides one centralized system where
+                    organizations can manage food listings, review requests,
+                    schedule pickups, and track completed redistribution
+                    activities.
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- SECTION 3 -->
+        <section class="h-screen snap-start flex items-center">
+
+            <div class="px-16 max-w-3xl">
+
+                <h2 class="text-4xl font-bold text-white mb-8">
+                    How It Works
+                </h2>
+
+                <div class="space-y-5">
+
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-5">
+                        <h3 class="font-semibold text-xl text-white">
+                            1. List Available Food
+                        </h3>
+
+                        <p class="text-green-100 mt-2">
+                            Food providers record surplus food that is
+                            available for redistribution.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-5">
+                        <h3 class="font-semibold text-xl text-white">
+                            2. Submit Requests
+                        </h3>
+
+                        <p class="text-green-100 mt-2">
+                            Verified organizations browse food listings
+                            and submit requests.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-5">
+                        <h3 class="font-semibold text-xl text-white">
+                            3. Schedule Pickup
+                        </h3>
+
+                        <p class="text-green-100 mt-2">
+                            Both organizations coordinate a pickup date,
+                            time, and location.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-5">
+                        <h3 class="font-semibold text-xl text-white">
+                            4. Confirm Distribution
+                        </h3>
+
+                        <p class="text-green-100 mt-2">
+                            Completed transactions are recorded for
+                            accountability and transparency.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- SECTION 4 -->
+        <section class="h-screen snap-start flex items-center">
+
+            <div class="px-16 max-w-3xl">
+
+                <h2 class="text-4xl font-bold text-white mb-8">
+                    Key Features
+                </h2>
+
+                <div class="grid grid-cols-2 gap-4">
+
+                    <div class="bg-white/10 rounded-xl p-5 text-white">
+                        ✓ Food Listings
+                    </div>
+
+                    <div class="bg-white/10 rounded-xl p-5 text-white">
+                        ✓ Expiration Monitoring
+                    </div>
+
+                    <div class="bg-white/10 rounded-xl p-5 text-white">
+                        ✓ Request Management
+                    </div>
+
+                    <div class="bg-white/10 rounded-xl p-5 text-white">
+                        ✓ Pickup Scheduling
+                    </div>
+
+                    <div class="bg-white/10 rounded-xl p-5 text-white">
+                        ✓ Distribution Tracking
+                    </div>
+
+                    <div class="bg-white/10 rounded-xl p-5 text-white">
+                        ✓ Activity Reports
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+        
+        <!-- FOOTER SECTION -->
+        <section class="h-screen snap-start flex items-center">
+
+            <div class="px-16 max-w-3xl">
+
+                <h2 class="text-4xl font-bold text-white mb-6">
+                    FoodRescue Hub
+                </h2>
+
+                <p class="text-xl text-green-100 leading-relaxed">
+                    A centralized platform that helps verified organizations
+                    manage surplus food, coordinate redistribution activities,
+                    and maintain transparent records of food distribution.
+                </p>
+
+                <div class="mt-10 grid grid-cols-2 gap-8">
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-white mb-2">
+                            Our Mission
+                        </h3>
+
+                        <p class="text-green-100">
+                            Support the effective use of surplus food through
+                            organized inventory management and redistribution.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-xl text-white mb-2">
+                            Platform Focus
+                        </h3>
+
+                        <p class="text-green-100">
+                            Food inventory, request management, pickup
+                            coordination, and distribution tracking.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="mt-12 border-t border-white/20 pt-6">
+
+                    <div class="flex flex-wrap gap-3">
+
+                        <span class="bg-white/10 px-4 py-2 rounded-full text-sm">
+                            Food Listings
+                        </span>
+
+                        <span class="bg-white/10 px-4 py-2 rounded-full text-sm">
+                            Organization Verification
+                        </span>
+
+                        <span class="bg-white/10 px-4 py-2 rounded-full text-sm">
+                            Pickup Scheduling
+                        </span>
+
+                        <span class="bg-white/10 px-4 py-2 rounded-full text-sm">
+                            Redistribution Tracking
+                        </span>
+
+                    </div>
+
+                    <p class="mt-8 text-sm text-green-100">
+                        © {{ date('Y') }} FoodRescue Hub. Developed as a
+                        Surplus Food Management and Redistribution System.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
     </div>
+
 </div>
+
 
     <!-- RIGHT CONTAINER: For the login form -->
     <div class="w-full md:w-2/5 bg-white p-8 sm:p-16 flex flex-col justify-center items-center">
         <div class="w-full max-w-md">
-            <h2 class="text-center text-2xl font-bold text-gray-800">Login</h2>
+            <h2 class="text-center text-2xl font-bold text-gray-800">Welcome Back</h2>
+            <p class="mt-2 text-center text-sm text-gray-500">Sign in to manage food listings, requests, pickup schedules, and distribution records.</p>
 
             @if (session('success'))
                 <p class="mt-4 text-center text-green-600 font-medium">{{ session('success') }}</p>
@@ -99,7 +324,7 @@
                     name="password"
                     required placeholder="Enter your password"
                     class="mt-1.5 block w-full rounded-[5px] border border-[#ccc] p-3 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none">
-
+                <div class="mt-4 rounded-lg bg-green-50 border border-green-200 p-3 text-sm text-green-800">Only verified organizations can participate in food redistribution activities.</div>
                 <button type="submit" 
                     class="mt-5 w-full cursor-pointer rounded-[5px] bg-[#2E7D32] p-3 text-base font-semibold text-white transition-colors duration-200 hover:bg-[#66BB6A]">
                     LOGIN
