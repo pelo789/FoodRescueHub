@@ -294,7 +294,7 @@
 
 
     <!-- RIGHT CONTAINER: For the login form -->
-    <div class="w-full md:w-2/5 bg-white p-8 sm:p-16 flex flex-col justify-center items-center">
+    <div class="w-full md:w-2/5 bg-[#FAFAFA] border-l border-gray-200 p-8 sm:p-16 flex flex-col justify-center items-center">
         <div class="w-full max-w-md">
             <h2 class="text-center text-2xl font-bold text-gray-800">Welcome Back</h2>
             <p class="mt-2 text-center text-sm text-gray-500">Sign in to manage food listings, requests, pickup schedules, and distribution records.</p>
