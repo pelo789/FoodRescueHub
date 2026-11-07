@@ -49,7 +49,7 @@ class AuthController extends Controller
         'phone' => $validated['phone'],
         'address' => $validated['address'],
 
-        'role' => 'customer', // Default role for new users
+        'role' => 'organization', // Default role for new users
         'status' => 'active', // Default status for new users
         ]);
 
