@@ -39,6 +39,7 @@ class AuthController extends Controller
         'organization_name' => 'required|string|max:255',
 
         'organization_type' => 'required|string|max:100',
+        'organization_address' => 'required|string|max:255',
         ]);
 
         $user = User::create([
@@ -57,6 +58,7 @@ class AuthController extends Controller
             'user_id' => $user->user_id,
             'organization_name' => $validated['organization_name'],
             'organization_type' => $validated['organization_type'],
+            'organization_address' => $validated['organization_address'],
             'verification_status' => 'pending',
         ]);
 

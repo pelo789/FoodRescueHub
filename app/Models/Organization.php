@@ -12,6 +12,7 @@ class Organization extends Model
         'user_id',
         'organization_name',
         'organization_type',
+        'organization_address',
         'verification_status',
     ];
 }
