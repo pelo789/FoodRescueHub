@@ -1,311 +1,116 @@
 @php
     use Illuminate\Support\Facades\Auth;
-
     $user = Auth::user();
-
     $role = strtolower(str_replace(' ', '_', trim($user->role ?? '')));
-
     $isAdmin = $role === 'administrator';
     $isProvider = $role === 'food_provider';
     $isRecipient = $role === 'recipient_organization';
-
     $fullName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
-
-    if ($fullName === '') {
-        $fullName = $user->name ?? 'User';
-    }
+    if ($fullName === '') { $fullName = $user->name ?? 'User'; }
 @endphp
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoodRescue Hub - Dashboard</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background: #f5f5f5;
-        }
-
-        .sidebar {
-            width: 220px;
-            background: white;
-            position: fixed;
-            height: 100%;
-            padding: 20px;
-            border-right: 1px solid #ddd;
-        }
-
-        .sidebar h2 {
-            font-size: 20px;
-            margin-bottom: 30px;
-        }
-
-        .sidebar a {
-            display: block;
-            padding: 12px;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .sidebar a:hover {
-            background: #eee;
-        }
-
-        .main {
-            margin-left: 260px;
-            padding: 25px;
-        }
-
-        .header {
-            background: white;
-            padding: 20px;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-
-        .section {
-            background: white;
-            padding: 20px;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-
-        .stats {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .stat-box {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 20px;
-            flex: 1;
-            min-width: 130px;
-        }
-
-        .stat-box h3 {
-            font-size: 14px;
-            font-weight: normal;
-        }
-
-        .stat-box p {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 0;
-        }
-
-        button {
-            padding: 8px 15px;
-            cursor: pointer;
-        }
-
-        @media (max-width: 700px) {
-            .sidebar {
-                position: static;
-                width: auto;
-                height: auto;
-            }
-
-            .main {
-                margin-left: 0;
-            }
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+            --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
         }
     </style>
 </head>
 
-<body>
+<body class="min-h-screen bg-[#f4f6f9] font-sans flex flex-col md:flex-row antialiased text-gray-900">
 
-    <div class="sidebar">
-        <h2>FoodRescue Hub</h2>
+    <!-- INCLUDE SEPARATE SIDEBAR -->
+    @include('components.sidebar')
 
-        <a href="{{ route('dashboard') }}">Dashboard</a>
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full flex flex-col gap-6">
 
-        @if ($isAdmin)
-            <a href="#">Organizations</a>
-            <a href="#">Verification Requests</a>
-            <a href="#">User Management</a>
-            <a href="#">Reports</a>
-            <a href="#">Audit Logs</a>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-gray-200/60">
+            <div>
+                <span class="text-[11px] font-semibold text-[#2E7D32] uppercase tracking-wider">Dashboard Portal</span>
+                <h1 class="text-xl font-bold text-gray-900 tracking-tight">Welcome back, {{ $fullName }}</h1>
+            </div>
 
-        @elseif ($isProvider)
-            <a href="#">Food Listings</a>
-            <a href="#">Inventory Management</a>
-            <a href="#">Food Requests</a>
-            <a href="#">Pickup Schedules</a>
-            <a href="#">Redistribution History</a>
-
-        @elseif ($isRecipient)
-            <a href="#">Browse Available Food</a>
-            <a href="#">My Requests</a>
-            <a href="#">Pickup Schedules</a>
-            <a href="#">Received Food</a>
-
-        @else
-            <p>Unrecognized user role.</p>
-        @endif
-
-        <a href="#">My Profile</a>
-
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit">Logout</button>
-        </form>
-    </div>
-
-    <div class="main">
-
-        <div class="header">
-            <h2>Welcome, {{ $fullName }}!</h2>
-            <p>
-                Role:
-                @if ($isAdmin)
-                    Administrator
-                @elseif ($isProvider)
-                    Food Provider
+            <div>
+                @if ($isProvider)
+                    <a href="#" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-xs font-semibold shadow-xs transition-colors">+ New Food Listing</a>
                 @elseif ($isRecipient)
-                    Recipient Organization
-                @else
-                    Unknown Role ({{ $user->role }})
+                    <a href="#" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-xs font-semibold shadow-xs transition-colors">Browse Available Food</a>
                 @endif
-            </p>
+            </div>
         </div>
 
-        {{-- ADMINISTRATOR DASHBOARD --}}
+        {{-- ADMINISTRATOR VIEW --}}
         @if ($isAdmin)
-
-            <h2>Administrator Dashboard</h2>
-
-            <div class="stats">
-                <div class="stat-box">
-                    <h3>Total Organizations</h3>
-                    <p>{{ $totalOrganizations ?? 0 }}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-[#2E7D32]">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Total Organizations</span>
+                    <p class="text-xl font-bold text-gray-900 mt-1">{{ $totalOrganizations ?? 0 }}</p>
                 </div>
-
-                <div class="stat-box">
-                    <h3>Pending Verifications</h3>
-                    <p>{{ $pendingVerifications ?? 0 }}</p>
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-amber-500">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Pending Verifications</span>
+                    <p class="text-xl font-bold text-amber-600 mt-1">{{ $pendingVerifications ?? 0 }}</p>
                 </div>
-
-                <div class="stat-box">
-                    <h3>Active Food Listings</h3>
-                    <p>{{ $activeListings ?? 0 }}</p>
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-emerald-500">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Active Food Listings</span>
+                    <p class="text-xl font-bold text-[#2E7D32] mt-1">{{ $activeListings ?? 0 }}</p>
                 </div>
-
-                <div class="stat-box">
-                    <h3>Completed Redistributions</h3>
-                    <p>{{ $completedRedistributions ?? 0 }}</p>
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-blue-500">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Completed Redistributions</span>
+                    <p class="text-xl font-bold text-blue-600 mt-1">{{ $completedRedistributions ?? 0 }}</p>
                 </div>
             </div>
 
-            <div class="section">
-                <h3>Recent System Activities</h3>
-                @isset($recentActivities)
-                    @forelse($recentActivities as $activity)
-                        <p>{{ $activity->description ?? $activity->action }} ({{ $activity->created_at }})</p>
-                    @empty
-                        <p>No recent activities available.</p>
-                    @endforelse
-                @else
-                    <p>No recent activities available.</p>
-                @endisset
-            </div>
-
-        {{-- FOOD PROVIDER DASHBOARD --}}
+        {{-- FOOD PROVIDER VIEW --}}
         @elseif ($isProvider)
-
-            <h2>Food Provider Dashboard</h2>
-
-            <div class="stats">
-                <div class="stat-box">
-                    <h3>Active Food Listings</h3>
-                    <p>{{ $activeListings ?? 0 }}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-[#2E7D32]">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Active Listings</span>
+                    <p class="text-xl font-bold text-[#2E7D32] mt-1">{{ $activeListings ?? 0 }}</p>
                 </div>
-
-                <div class="stat-box">
-                    <h3>Pending Requests</h3>
-                    <p>{{ $pendingRequests ?? 0 }}</p>
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-blue-500">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Pending Requests</span>
+                    <p class="text-xl font-bold text-blue-600 mt-1">{{ $pendingRequests ?? 0 }}</p>
                 </div>
-
-                <div class="stat-box">
-                    <h3>Food Nearing Expiration</h3>
-                    <p>{{ $expiringListings ?? 0 }}</p>
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-red-500">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Expiring Soon</span>
+                    <p class="text-xl font-bold text-red-600 mt-1">{{ $expiringListings ?? 0 }}</p>
                 </div>
-
-                <div class="stat-box">
-                    <h3>Upcoming Pickups</h3>
-                    <p>{{ $upcomingPickups ?? 0 }}</p>
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-amber-500">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Upcoming Pickups</span>
+                    <p class="text-xl font-bold text-amber-600 mt-1">{{ $upcomingPickups ?? 0 }}</p>
                 </div>
             </div>
 
-            <div class="section">
-                <h3>Recent Food Listings</h3>
-                @isset($recentListings)
-                    @forelse($recentListings as $listing)
-                        <p>{{ $listing->name }} - Qty: {{ $listing->quantity }} (Exp: {{ $listing->expiration_date }})</p>
-                    @empty
-                        <p>No food listings available.</p>
-                    @endforelse
-                @else
-                    <p>No food listings available.</p>
-                @endisset
-            </div>
-
-        {{-- RECIPIENT ORGANIZATION DASHBOARD --}}
+        {{-- RECIPIENT ORGANIZATION VIEW --}}
         @elseif ($isRecipient)
-
-            <h2>Recipient Organization Dashboard</h2>
-
-            <div class="stats">
-                <div class="stat-box">
-                    <h3>Available Food Listings</h3>
-                    <p>{{ $availableListings ?? 0 }}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-[#2E7D32]">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Available Food</span>
+                    <p class="text-xl font-bold text-[#2E7D32] mt-1">{{ $availableListings ?? 0 }}</p>
                 </div>
-
-                <div class="stat-box">
-                    <h3>My Submitted Requests</h3>
-                    <p>{{ $myRequests ?? 0 }}</p>
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-blue-500">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Submitted Requests</span>
+                    <p class="text-xl font-bold text-blue-600 mt-1">{{ $myRequests ?? 0 }}</p>
                 </div>
-
-                <div class="stat-box">
-                    <h3>Approved Requests</h3>
-                    <p>{{ $approvedRequests ?? 0 }}</p>
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-emerald-500">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Approved Requests</span>
+                    <p class="text-xl font-bold text-emerald-600 mt-1">{{ $approvedRequests ?? 0 }}</p>
                 </div>
-
-                <div class="stat-box">
-                    <h3>Upcoming Pickups</h3>
-                    <p>{{ $upcomingPickups ?? 0 }}</p>
+                <div class="bg-white rounded-lg border border-gray-200/80 p-4 border-l-4 border-l-amber-500">
+                    <span class="text-[11px] font-medium text-gray-500 uppercase">Scheduled Pickups</span>
+                    <p class="text-xl font-bold text-amber-600 mt-1">{{ $upcomingPickups ?? 0 }}</p>
                 </div>
             </div>
-
-            <div class="section">
-                <h3>Recent Requests</h3>
-                @isset($recentRequests)
-                    @forelse($recentRequests as $request)
-                        <p>Request #{{ $request->id }} - Status: {{ $request->status }}</p>
-                    @empty
-                        <p>No requests available.</p>
-                    @endforelse
-                @else
-                    <p>No requests available.</p>
-                @endisset
-            </div>
-
-        @else
-
-            <div class="section">
-                <h3>Access Restricted</h3>
-                <p>Your account does not have a recognized FoodRescue Hub role.</p>
-                <p>Please contact the administrator.</p>
-            </div>
-
         @endif
 
-    </div>
+    </main>
 
 </body>
 </html>
