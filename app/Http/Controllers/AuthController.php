@@ -10,48 +10,64 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    // SHOW REGISTER PAGE
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    // REGISTER USER
     public function register(Request $request)
     {
         $validated = $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
+            'organization_name' => 'required|string|max:150',
+            'role' => 'required|in:food_provider,recipient_organization',
             'email' => 'required|email|max:150|unique:users,email',
+
             'password' => [
                 'required',
                 'confirmed',
                 Password::min(8),
             ],
+
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
+
+            'verification_document' =>
+                'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
+
+        // Store the document on Laravel's private local disk.
+        $documentPath = $validated['verification_document']
+            ->store('verification-documents', 'local');
 
         User::create([
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
+            'organization_name' => $validated['organization_name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
             'address' => $validated['address'] ?? null,
+
+            'role' => $validated['role'],
+            'status' => 'active',
+            'verification_status' => 'pending',
+            'verification_document' => $documentPath,
         ]);
 
         return redirect()->route('login')
-            ->with('success', 'Registration successful! Please login.');
+            ->with(
+                'success',
+                'Registration successful! Your organization is awaiting verification. You may log in, but redistribution features will remain unavailable until approval.'
+            );
     }
 
-    // SHOW LOGIN PAGE
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    // LOGIN USER
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -69,12 +85,11 @@ class AuthController extends Controller
 
         return back()
             ->withErrors([
-                'email' => 'Invalid credentials or account is inactive.',
+                'email' => 'Invalid credentials or your account is inactive.',
             ])
             ->onlyInput('email');
     }
 
-    // LOGOUT
     public function logout(Request $request)
     {
         Auth::logout();

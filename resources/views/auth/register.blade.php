@@ -31,6 +31,7 @@
         <!-- REGISTRATION FORM -->
         <form method="POST"
               action="{{ route('register.submit') }}"
+              enctype="multipart/form-data"
               class="space-y-4">
 
             @csrf
@@ -63,6 +64,27 @@
                        required
                        placeholder="Enter your last name"
                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all">
+            </div>
+
+            <!-- ORGANIZATION NAME -->
+            <div>
+                <label for="organization_name"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                    Organization Name
+                </label>
+
+                <input type="text"
+                       name="organization_name"
+                       id="organization_name"
+                       value="{{ old('organization_name') }}"
+                       required
+                       maxlength="150"
+                       placeholder="Enter your organization name"
+                       class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
+
+                @error('organization_name')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- EMAIL -->
@@ -123,22 +145,44 @@
                         Select your role
                     </option>
 
-                    <option value="Primary Operator"
-                        {{ old('role') == 'Primary Operator' ? 'selected' : '' }}>
-                        Primary Operator
+                    <option value="food_provider"
+                        {{ old('role') == 'food_provider' ? 'selected' : '' }}>
+                        Food Provider
                     </option>
 
-                    <option value="Stakeholder"
-                        {{ old('role') == 'Stakeholder' ? 'selected' : '' }}>
-                        Stakeholder
-                    </option>
-
-                    <option value="End Beneficiary"
-                        {{ old('role') == 'End Beneficiary' ? 'selected' : '' }}>
-                        End Beneficiary
+                    <option value="recipient_organization"
+                        {{ old('role') == 'recipient_organization' ? 'selected' : '' }}>
+                        Recipient Organization
                     </option>
 
                 </select>
+
+                @error('role')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- VERIFICATION DOCUMENT -->
+            <div>
+                <label for="verification_document"
+                       class="block text-sm font-medium text-gray-700 mb-1">
+                    Organization Verification Document
+                </label>
+
+                <input type="file"
+                       name="verification_document"
+                       id="verification_document"
+                       accept=".pdf,.jpg,.jpeg,.png"
+                       required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none">
+
+                <p class="text-xs text-gray-500 mt-1">
+                    Upload a supporting organization document (PDF, JPG, JPEG, or PNG). Maximum file size: 5 MB.
+                </p>
+
+                @error('verification_document')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- PASSWORD -->

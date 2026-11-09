@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -27,8 +26,11 @@ class User extends Authenticatable
         'password',
         'phone',
         'address',
+        'organization_name',
         'role',
         'status',
+        'verification_status',
+        'verification_document',
     ];
 
     protected $hidden = [
@@ -39,4 +41,26 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isAdministrator(): bool
+    {
+        // "admin" is retained for compatibility with existing accounts.
+        return in_array($this->role, ['administrator', 'admin'], true);
+    }
+
+    public function isOrganizationVerified(): bool
+    {
+        return $this->verification_status === 'verified';
+    }
+
+    public function canParticipateInRedistribution(): bool
+    {
+        return $this->status === 'active'
+            && $this->isOrganizationVerified()
+            && in_array(
+                $this->role,
+                ['food_provider', 'recipient_organization'],
+                true
+            );
+    }
 }
