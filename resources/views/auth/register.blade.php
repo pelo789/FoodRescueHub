@@ -23,68 +23,70 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('register.submit') }}" class="space-y-4">
-        @csrf
+    <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data" class="space-y-4">
+    @csrf
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-        <input type="text"
-               name="first_name"
-               value="{{ old('first_name') }}"
-               maxlength="100"
-               required placeholder="Enter your first name"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+    <!-- First & Last Name -->
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">First Name</label>
+            <input type="text" name="first_name" required class="w-full px-3 py-2 border rounded-md text-sm">
+        </div>
+        <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Last Name</label>
+            <input type="text" name="last_name" required class="w-full px-3 py-2 border rounded-md text-sm">
+        </div>
+    </div>
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-        <input type="text"
-               name="last_name"
-               value="{{ old('last_name') }}"
-               maxlength="100"
-               required placeholder="Enter your last name"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+    <!-- Email -->
+    <div>
+        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Email Address</label>
+        <input type="email" name="email" required class="w-full px-3 py-2 border rounded-md text-sm">
+    </div>
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input type="email"
-               name="email"
-               value="{{ old('email') }}"
-               maxlength="150"
-               required placeholder="Enter your email address"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+    <!-- Role Selection (BRD Requirement) -->
+    <div>
+        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Organization Role</label>
+        <select name="role" required class="w-full px-3 py-2 border rounded-md text-sm bg-white">
+            <option value="food_provider">Food Provider</option>
+            <option value="recipient_organization">Recipient Organization</option>
+        </select>
+    </div>
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-        <input type="tel"
-               name="phone"
-               value="{{ old('phone') }}"
-               maxlength="20"
-               placeholder="Enter your phone number"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+    <!-- Address & Phone -->
+    <div>
+        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Organization Address</label>
+        <textarea name="address" rows="2" class="w-full px-3 py-2 border rounded-md text-sm"></textarea>
+    </div>
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-        <input type="text"
-               name="address"
-               value="{{ old('address') }}"
-               maxlength="255"
-               placeholder="Enter your address"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+    <div>
+        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Contact Number</label>
+        <input type="text" name="phone" class="w-full px-3 py-2 border rounded-md text-sm">
+    </div>
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-        <input type="password"
-               name="password"
-               minlength="8"
-               required
-               placeholder="Enter your password"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+    <!-- Document Upload for Verification (BRD-M03) -->
+    <div>
+        <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Supporting Verification Document (PDF/Image)</label>
+        <input type="file" name="verification_document" required class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-[#2E7D32] hover:file:bg-green-100">
+        <p class="text-[11px] text-gray-400 mt-1">Upload proof of organization legitimacy (e.g., permit, ID, or certificate).</p>
+    </div>
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-        <input type="password"
-               name="password_confirmation"
-               minlength="8"
-               required
-               placeholder="Confirm your password"
-               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+    <!-- Passwords -->
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Password</label>
+            <input type="password" name="password" required class="w-full px-3 py-2 border rounded-md text-sm">
+        </div>
+        <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Confirm Password</label>
+            <input type="password" name="password_confirmation" required class="w-full px-3 py-2 border rounded-md text-sm">
+        </div>
+    </div>
 
-        <!-- Submit button -->
-        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition-colors duration-200">REGISTER</button>
-    </form>
+    <button type="submit" class="w-full py-2.5 bg-[#2E7D32] hover:bg-[#1B5E20] text-white font-semibold rounded-md text-sm transition-colors">
+        Register Organization
+    </button>
+</form>
 
     <!-- Footer Links -->
     <div class="mt-6 text-center text-sm text-gray-600">
