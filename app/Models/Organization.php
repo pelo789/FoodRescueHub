@@ -14,5 +14,6 @@ class Organization extends Model
         'organization_type',
         'organization_address',
         'verification_status',
+        'verification_document'
     ];
 }
