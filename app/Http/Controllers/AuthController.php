@@ -34,7 +34,14 @@ class AuthController extends Controller
             'organization_name' => 'required|string|max:255',
             'organization_type' => 'required|string|max:100',
             'organization_address' => 'required|string|max:255',
+            'supporting_document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Max 5MB
         ]);
+
+        // Handle file upload
+        $documentPath = null;
+        if ($request->hasFile('supporting_document')) {
+            $documentPath = $request->file('supporting_document')->store('verification_documents', 'public');
+        }
 
         // Determine user role based on the organization type selected
         $foodProviderTypes = ['Restaurant', 'Bakery', 'Grocery Store', 'Catering Service'];
@@ -50,7 +57,7 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'],
             'address' => $validated['address'],
-            'role' => $assignedRole, // Dynamically assigned role!
+            'role' => $assignedRole,
             'status' => 'active', 
         ]);
 
@@ -60,6 +67,7 @@ class AuthController extends Controller
             'organization_type' => $validated['organization_type'],
             'organization_address' => $validated['organization_address'],
             'verification_status' => 'Pending',
+            'verification_document' => $documentPath, // Save the stored file path
         ]);
 
         return redirect()->route('login')
