@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -20,25 +21,45 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'email' => 'required|email|max:150|unique:users,email',
-            'password' => [
-                'required',
-                'confirmed',
-                Password::min(8),
-            ],
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
+        'first_name' => 'required|string|max:100',
+        'last_name' => 'required|string|max:100',
+
+        'email' => 'required|email|max:150|unique:users,email',
+
+        'password' => [
+            'required',
+            'confirmed',
+            Password::min(8),
+        ],
+
+        'phone' => 'required|string|max:20',
+
+        'address' => 'required|string|max:255',
+
+        'organization_name' => 'required|string|max:255',
+
+        'organization_type' => 'required|string|max:100',
+        'organization_address' => 'required|string|max:255',
         ]);
 
-        User::create([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'phone' => $validated['phone'] ?? null,
-            'address' => $validated['address'] ?? null,
+        $user = User::create([
+        'first_name' => $validated['first_name'],
+        'last_name' => $validated['last_name'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
+        'phone' => $validated['phone'],
+        'address' => $validated['address'],
+
+        'role' => 'organization', // Default role for new users
+        'status' => 'active', // Default status for new users
+        ]);
+
+        $organization = Organization::create([
+            'user_id' => $user->user_id,
+            'organization_name' => $validated['organization_name'],
+            'organization_type' => $validated['organization_type'],
+            'organization_address' => $validated['organization_address'],
+            'verification_status' => 'pending',
         ]);
 
         return redirect()->route('login')
