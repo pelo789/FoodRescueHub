@@ -80,12 +80,22 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $credentials['status'] = 'active';
-
+        // Attempt authentication using email and password only (removing hardcoded status check here)
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
             $user = Auth::user();
+
+            // Handle Banned / Suspended / Deactivated account statuses
+            if ($user->status === 'inactive' || $user->status === 'banned') {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()
+                    ->withErrors(['email' => 'Your account is inactive or suspended.'])
+                    ->onlyInput('email');
+            }
+
+            $request->session()->regenerate();
 
             // Role-based redirection after login
             if ($user->role === 'admin') {
@@ -99,7 +109,7 @@ class AuthController extends Controller
 
         return back()
             ->withErrors([
-                'email' => 'Invalid credentials or account is inactive.',
+                'email' => 'Invalid credentials.',
             ])
             ->onlyInput('email');
     }
