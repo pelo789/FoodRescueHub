@@ -39,4 +39,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // ADD THIS RELATIONSHIP METHOD HERE:
+    public function organization()
+    {
+        return $this->hasOne(Organization::class, 'user_id', 'user_id');
+    }
 }
