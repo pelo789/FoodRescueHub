@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('phone', 20)->nullable();
             $table->text('address')->nullable();
 
-            $table->enum('role', ['admin', 'customer'])
-                ->default('customer');
+            $table->enum('role', ['admin', 'food_provider', 'recipient_organization'])
+                ->default('recipient_organization');
 
             $table->enum('status', ['active', 'inactive', 'banned'])
                 ->default('active');

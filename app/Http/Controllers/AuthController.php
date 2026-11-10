@@ -21,37 +21,37 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-        'first_name' => 'required|string|max:100',
-        'last_name' => 'required|string|max:100',
-
-        'email' => 'required|email|max:150|unique:users,email',
-
-        'password' => [
-            'required',
-            'confirmed',
-            Password::min(8),
-        ],
-
-        'phone' => 'required|string|max:20',
-
-        'address' => 'required|string|max:255',
-
-        'organization_name' => 'required|string|max:255',
-
-        'organization_type' => 'required|string|max:100',
-        'organization_address' => 'required|string|max:255',
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'email' => 'required|email|max:150|unique:users,email',
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8),
+            ],
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'organization_name' => 'required|string|max:255',
+            'organization_type' => 'required|string|max:100',
+            'organization_address' => 'required|string|max:255',
         ]);
 
-        $user = User::create([
-        'first_name' => $validated['first_name'],
-        'last_name' => $validated['last_name'],
-        'email' => $validated['email'],
-        'password' => Hash::make($validated['password']),
-        'phone' => $validated['phone'],
-        'address' => $validated['address'],
+        // Determine user role based on the organization type selected
+        $foodProviderTypes = ['Restaurant', 'Bakery', 'Grocery Store', 'Catering Service'];
+        
+        $assignedRole = in_array($validated['organization_type'], $foodProviderTypes) 
+            ? 'food_provider' 
+            : 'recipient_organization';
 
-        'role' => 'organization', // Default role for new users
-        'status' => 'active', // Default status for new users
+        $user = User::create([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'role' => $assignedRole, // Dynamically assigned role!
+            'status' => 'active', 
         ]);
 
         $organization = Organization::create([
@@ -59,7 +59,7 @@ class AuthController extends Controller
             'organization_name' => $validated['organization_name'],
             'organization_type' => $validated['organization_type'],
             'organization_address' => $validated['organization_address'],
-            'verification_status' => 'pending',
+            'verification_status' => 'Pending',
         ]);
 
         return redirect()->route('login')

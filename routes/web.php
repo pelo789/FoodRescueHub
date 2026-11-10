@@ -26,7 +26,14 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $user = Auth::user();
+        if ($user->role === 'admin') {
+            return view('admin.dashboard');
+        } elseif ($user->role === 'food_provider') {
+            return view('provider.dashboard');
+        } else {
+            return view('recipient.dashboard');
+        }
     })->name('dashboard');
 
     Route::post('/logout', [AuthController::class, 'logout'])
