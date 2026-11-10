@@ -19,11 +19,19 @@ return new class extends Migration
                     ->onDelete('cascade');
 
             $table->string('organization_name');
-
             $table->string('organization_type');
+            $table->string('organization_address')->nullable(); // Good to have for completeness
+            
+            // Supporting verification document path
+            $table->string('verification_document')->nullable();
 
-            $table->string('verification_status')
-                ->default('Pending');
+            // Updated status field supporting all BRD statuses
+            $table->enum('verification_status', [
+                'Pending', 
+                'Verified', 
+                'Rejected', 
+                'Additional Information Required'
+            ])->default('Pending');
 
             $table->timestamps();
         });
