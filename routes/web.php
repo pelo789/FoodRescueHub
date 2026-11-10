@@ -28,13 +28,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         $user = Auth::user();
         if ($user->role === 'admin') {
-            return view('admin.dashboard');
+            return view('admin.verifications.index');
         } elseif ($user->role === 'food_provider') {
             return view('provider.dashboard');
         } else {
             return view('recipient.dashboard');
         }
     })->name('dashboard');
+
+    // Admin Verification Management Routes
+    Route::middleware('can:admin')->prefix('admin')->name('admin.')->group(function () {
+        // If you haven't set up a Gate/middleware for 'can:admin', we can protect it using role checks in the controller.
+    });
+
+    // Let's protect admin routes explicitly checking role in controller or simple middleware closure:
+    Route::get('/admin/verifications', [AdminController::class, 'index'])->name('admin.verifications');
+    Route::get('/admin/verifications/{id}', [AdminController::class, 'show'])->name('admin.verifications.show');
+    Route::post('/admin/verifications/{id}/update', [AdminController::class, 'updateStatus'])->name('admin.verifications.update');
 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');
