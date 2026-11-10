@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -24,11 +25,18 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-
+    // Existing Dashboard & Logout
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');
+
+    // New Admin Verification Routes (Protected by 'auth')
+    Route::get('/admin/verifications', [AdminController::class, 'index'])
+        ->name('admin.verifications');
+        
+    Route::post('/admin/users/{id}/verify', [AdminController::class, 'updateVerificationStatus'])
+        ->name('admin.users.verify');
 });
