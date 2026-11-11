@@ -4,9 +4,15 @@
 
     $role = strtolower(str_replace(' ', '_', trim($user->role ?? '')));
 
-    $isAdmin = $role === 'administrator';
+    $isAdmin = in_array($role, ['administrator', 'admin'], true);
     $isProvider = $role === 'food_provider';
     $isRecipient = $role === 'recipient_organization';
+
+    $isVerified = $user->verification_status === 'verified';
+    $verificationStatus = $user->verification_status ?? 'pending';
+
+    // Only administrators and verified organizations can see system tabs.
+    $canAccessFeatures = $isAdmin || $isVerified;
 
     $fullName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
 
@@ -36,6 +42,7 @@
             height: 100%;
             padding: 20px;
             border-right: 1px solid #ddd;
+            box-sizing: border-box;
         }
 
         .sidebar h2 {
@@ -52,6 +59,17 @@
 
         .sidebar a:hover {
             background: #eee;
+        }
+
+        .sidebar-notice {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-size: 13px;
+            line-height: 1.5;
         }
 
         .main {
@@ -98,6 +116,25 @@
             margin-bottom: 0;
         }
 
+        .verification-notice {
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            line-height: 1.6;
+        }
+
+        .pending-notice {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+        }
+
+        .rejected-notice {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
         button {
             padding: 8px 15px;
             cursor: pointer;
@@ -122,34 +159,45 @@
     <div class="sidebar">
         <h2>FoodRescue Hub</h2>
 
+        {{-- Dashboard is always accessible --}}
         <a href="{{ route('dashboard') }}">Dashboard</a>
 
-        @if ($isAdmin)
-            <a href="#">Organizations</a>
-            <a href="#">Verification Requests</a>
-            <a href="#">User Management</a>
-            <a href="#">Reports</a>
-            <a href="#">Audit Logs</a>
+        {{-- Only administrators and verified organizations can see these tabs --}}
+        @if ($canAccessFeatures)
 
-        @elseif ($isProvider)
-            <a href="#">Food Listings</a>
-            <a href="#">Inventory Management</a>
-            <a href="#">Food Requests</a>
-            <a href="#">Pickup Schedules</a>
-            <a href="#">Redistribution History</a>
+            @if ($isAdmin)
+                <a href="#">Organizations</a>
+                <a href="{{ route('admin.verifications.index') }}">Verification Requests</a>
+                <a href="#">User Management</a>
+                <a href="#">Reports</a>
+                <a href="#">Audit Logs</a>
 
-        @elseif ($isRecipient)
-            <a href="#">Browse Available Food</a>
-            <a href="#">My Requests</a>
-            <a href="#">Pickup Schedules</a>
-            <a href="#">Received Food</a>
+            @elseif ($isProvider)
+                <a href="#">Food Listings</a>
+                <a href="#">Inventory Management</a>
+                <a href="#">Food Requests</a>
+                <a href="#">Pickup Schedules</a>
+                <a href="#">Redistribution History</a>
+
+            @elseif ($isRecipient)
+                <a href="#">Browse Available Food</a>
+                <a href="#">My Requests</a>
+                <a href="#">Pickup Schedules</a>
+                <a href="#">Received Food</a>
+            @endif
+
+            <a href="#">My Profile</a>
 
         @else
-            <p>Unrecognized user role.</p>
+
+            <div class="sidebar-notice">
+                <strong>Restricted Access</strong>
+                <p>Your organization must be verified before you can access other system features.</p>
+            </div>
+
         @endif
 
-        <a href="#">My Profile</a>
-
+        {{-- Logout remains accessible to everyone --}}
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit">Logout</button>
@@ -173,6 +221,56 @@
                 @endif
             </p>
         </div>
+
+        {{-- VERIFICATION STATUS NOTICE --}}
+        @if (!$isAdmin && !$isVerified)
+
+            @if ($verificationStatus === 'pending')
+
+                <div class="verification-notice pending-notice">
+                    <h3>Account Verification Pending</h3>
+
+                    <p>
+                        Your organization registration is currently being reviewed
+                        by the administrator.
+                    </p>
+
+                    <p>
+                        You can access your dashboard, but other system features
+                        will remain unavailable until your organization has been verified.
+                    </p>
+                </div>
+
+            @elseif ($verificationStatus === 'rejected')
+
+                <div class="verification-notice rejected-notice">
+                    <h3>Organization Verification Rejected</h3>
+
+                    <p>
+                        Unfortunately, your organization's verification request
+                        has been rejected.
+                    </p>
+
+                    <p>
+                        Please contact the administrator for more information
+                        and guidance on the next steps.
+                    </p>
+                </div>
+
+            @else
+
+                <div class="verification-notice pending-notice">
+                    <h3>Organization Not Yet Verified</h3>
+
+                    <p>
+                        Your organization must be verified before you can
+                        access other system features.
+                    </p>
+                </div>
+
+            @endif
+
+        @endif
 
         {{-- ADMINISTRATOR DASHBOARD --}}
         @if ($isAdmin)
@@ -211,64 +309,88 @@
 
             <h2>Food Provider Dashboard</h2>
 
-            <div class="stats">
-                <div class="stat-box">
-                    <h3>Active Food Listings</h3>
-                    <p>0</p>
+            @if ($isVerified)
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <h3>Active Food Listings</h3>
+                        <p>0</p>
+                    </div>
+
+                    <div class="stat-box">
+                        <h3>Pending Requests</h3>
+                        <p>0</p>
+                    </div>
+
+                    <div class="stat-box">
+                        <h3>Food Nearing Expiration</h3>
+                        <p>0</p>
+                    </div>
+
+                    <div class="stat-box">
+                        <h3>Upcoming Pickups</h3>
+                        <p>0</p>
+                    </div>
                 </div>
 
-                <div class="stat-box">
-                    <h3>Pending Requests</h3>
-                    <p>0</p>
+                <div class="section">
+                    <h3>Recent Food Listings</h3>
+                    <p>No food listings available.</p>
                 </div>
 
-                <div class="stat-box">
-                    <h3>Food Nearing Expiration</h3>
-                    <p>0</p>
+            @else
+
+                <div class="section">
+                    <h3>Dashboard Overview</h3>
+                    <p>Your organization dashboard is available.</p>
+                    <p>System features will become accessible after verification.</p>
                 </div>
 
-                <div class="stat-box">
-                    <h3>Upcoming Pickups</h3>
-                    <p>0</p>
-                </div>
-            </div>
-
-            <div class="section">
-                <h3>Recent Food Listings</h3>
-                <p>No food listings available.</p>
-            </div>
+            @endif
 
         {{-- RECIPIENT ORGANIZATION DASHBOARD --}}
         @elseif ($isRecipient)
 
             <h2>Recipient Organization Dashboard</h2>
 
-            <div class="stats">
-                <div class="stat-box">
-                    <h3>Available Food Listings</h3>
-                    <p>0</p>
+            @if ($isVerified)
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <h3>Available Food Listings</h3>
+                        <p>0</p>
+                    </div>
+
+                    <div class="stat-box">
+                        <h3>My Submitted Requests</h3>
+                        <p>0</p>
+                    </div>
+
+                    <div class="stat-box">
+                        <h3>Approved Requests</h3>
+                        <p>0</p>
+                    </div>
+
+                    <div class="stat-box">
+                        <h3>Upcoming Pickups</h3>
+                        <p>0</p>
+                    </div>
                 </div>
 
-                <div class="stat-box">
-                    <h3>My Submitted Requests</h3>
-                    <p>0</p>
+                <div class="section">
+                    <h3>Recent Requests</h3>
+                    <p>No requests available.</p>
                 </div>
 
-                <div class="stat-box">
-                    <h3>Approved Requests</h3>
-                    <p>0</p>
+            @else
+
+                <div class="section">
+                    <h3>Dashboard Overview</h3>
+                    <p>Your organization dashboard is available.</p>
+                    <p>System features will become accessible after verification.</p>
                 </div>
 
-                <div class="stat-box">
-                    <h3>Upcoming Pickups</h3>
-                    <p>0</p>
-                </div>
-            </div>
-
-            <div class="section">
-                <h3>Recent Requests</h3>
-                <p>No requests available.</p>
-            </div>
+            @endif
 
         @else
 
