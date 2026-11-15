@@ -9,24 +9,24 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    // Ensure only admins can access these methods
-    public function __construct()
+    private function ensureAdmin()
     {
-        $this->middleware(function ($request, $next) {
-            if (Auth::check() && Auth::user()->role === 'admin') {
-                return $next($request);
-            }
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized action.');
-        });
+        }
     }
 
     // 1. VIEW VERIFICATION QUEUE
     public function index(Request $request)
     {
+        $this->ensureAdmin();
+
         $status = $request->get('status', 'Pending');
         
         $organizations = Organization::with('user')
-            ->where('verification_status', $status)
+            ->when($status, function ($query, $status) {
+                return $query->where('verification_status', $status);
+            })
             ->latest()
             ->paginate(10);
 
@@ -36,6 +36,8 @@ class AdminController extends Controller
     // 2. VIEW ORGANIZATION DETAILS
     public function show($id)
     {
+        $this->ensureAdmin();
+
         $organization = Organization::with('user')->findOrFail($id);
 
         return view('admin.verifications.show', compact('organization'));
@@ -44,6 +46,8 @@ class AdminController extends Controller
     // 3. UPDATE VERIFICATION STATUS
     public function updateStatus(Request $request, $id)
     {
+        $this->ensureAdmin();
+
         $request->validate([
             'verification_status' => 'required|in:Verified,Rejected,Additional Information Required',
         ]);
