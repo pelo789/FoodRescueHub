@@ -2,48 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Organization;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    /**
-     * Display the admin verification review list.
-     */
-    public function index()
+    private function ensureAdmin()
     {
-        // Ensure only administrators can access this view (BRD Rule 5)
-        if (auth()->user()->role !== 'administrator') {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized action.');
         }
-
-        $pendingUsers = User::where('verification_status', 'Pending')->get();
-
-        return view('admin.verifications', compact('pendingUsers'));
     }
 
-    /**
-     * Handle administrator decision on organization verification.
-     */
-    public function updateVerificationStatus(Request $request, $id)
+    // 1. VIEW VERIFICATION QUEUE
+    public function index(Request $request)
     {
-        // 1. Ensure only administrators can perform this action (BRD Rule 5)
-        if (auth()->user()->role !== 'administrator') {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->ensureAdmin();
 
-        // 2. Validate the requested status
-        $request->validate([
-            'verification_status' => ['required', 'in:Verified,Rejected,Additional Information Required'],
-        ]);
-
-        // 3. Find the user/organization and update their status
-        $targetUser = User::findOrFail($id);
+        $status = $request->get('status', 'Pending');
         
-        $targetUser->update([
-            'verification_status' => $request->verification_status,
+        $organizations = Organization::with('user')
+            ->when($status, function ($query, $status) {
+                return $query->where('verification_status', $status);
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.verifications.index', compact('organizations', 'status'));
+    }
+
+    // 2. VIEW ORGANIZATION DETAILS
+    public function show($id)
+    {
+        $this->ensureAdmin();
+
+        $organization = Organization::with('user')->findOrFail($id);
+
+        return view('admin.verifications.show', compact('organization'));
+    }
+
+    // 3. UPDATE VERIFICATION STATUS
+    public function updateStatus(Request $request, $id)
+    {
+        $this->ensureAdmin();
+
+        $request->validate([
+            'verification_status' => 'required|in:Verified,Rejected,Additional Information Required',
         ]);
 
-        return back()->with('success', 'Organization verification status updated to ' . $request->verification_status . '.');
+        $organization = Organization::findOrFail($id);
+        $organization->verification_status = $request->verification_status;
+        $organization->save();
+
+        return redirect()->route('admin.verifications', ['status' => $request->verification_status])
+            ->with('success', 'Organization verification status updated to ' . $request->verification_status . '.');
     }
 }

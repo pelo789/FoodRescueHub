@@ -33,14 +33,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 
+    // ADD THIS RELATIONSHIP METHOD HERE:
     public function organization()
     {
         return $this->hasOne(Organization::class, 'user_id', 'user_id');

@@ -2,114 +2,135 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
-use App\Models\User;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    public function showLogin()
-    {
-        return view('auth.login');
-    }
+    // SHOW REGISTER PAGE
     public function showRegister()
     {
         return view('auth.register');
     }
-    /**
-     * Handle user login attempts and enforce BRD account statuses.
-     */
-    public function login(Request $request)
+
+    // REGISTER USER
+    public function register(Request $request)
     {
-        // 1. Validate form inputs
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'email' => 'required|email|max:150|unique:users,email',
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8),
+            ],
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
+            'organization_name' => 'required|string|max:255',
+            'organization_type' => 'required|string|max:100',
+            'organization_address' => 'required|string|max:255',
+            'supporting_document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Max 5MB
         ]);
 
-        // 2. Attempt to log the user in using Auth::attempt
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
+        // Handle file upload
+        $documentPath = null;
+        if ($request->hasFile('supporting_document')) {
+            $documentPath = $request->file('supporting_document')->store('verification_documents', 'public');
+        }
 
+        // Determine user role based on the organization type selected
+        $foodProviderTypes = ['Restaurant', 'Bakery', 'Grocery Store', 'Catering Service'];
+        
+        $assignedRole = in_array($validated['organization_type'], $foodProviderTypes) 
+            ? 'food_provider' 
+            : 'recipient_organization';
+
+        $user = User::create([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'role' => $assignedRole,
+            'status' => 'active', 
+        ]);
+
+        $organization = Organization::create([
+            'user_id' => $user->user_id,
+            'organization_name' => $validated['organization_name'],
+            'organization_type' => $validated['organization_type'],
+            'organization_address' => $validated['organization_address'],
+            'verification_status' => 'Pending',
+            'verification_document' => $documentPath, // Save the stored file path
+        ]);
+
+        return redirect()->route('login')
+            ->with('success', 'Registration successful! Please login.');
+    }
+
+    // SHOW LOGIN PAGE
+    public function showLogin()
+    {
+        return view('auth.login');
+    }
+
+    // LOGIN USER
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        // Attempt authentication using email and password only (removing hardcoded status check here)
+        if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            // 3. BRD CHECK: Block Suspended or Deactivated accounts
-            if (in_array($user->account_status, ['Suspended', 'Deactivated'])) {
+            // Handle Banned / Suspended / Deactivated account statuses
+            if ($user->status === 'inactive' || $user->status === 'banned') {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
-                return back()->withErrors([
-                    'email' => 'Your account has been ' . strtolower($user->account_status) . '. Please contact the system administrator.',
-                ])->onlyInput('email');
+                return back()
+                    ->withErrors(['email' => 'Your account is inactive or suspended.'])
+                    ->onlyInput('email');
             }
 
-            return redirect()->intended('dashboard');
+            $request->session()->regenerate();
+
+            // Role-based redirection after login
+            if ($user->role === 'admin') {
+                return redirect()->route('dashboard');
+            } elseif ($user->role === 'food_provider') {
+                return redirect()->route('dashboard');
+            } else {
+                return redirect()->route('dashboard');
+            }
         }
 
-        // 4. If credentials fail
-        return back()->withErrors([
-            'email' => __('auth.failed'),
-        ])->onlyInput('email');
+        return back()
+            ->withErrors([
+                'email' => 'Invalid credentials.',
+            ])
+            ->onlyInput('email');
     }
 
-    /**
-     * Handle organization registration, document upload, and BRD defaults.
-     */
-    public function register(Request $request)
-    {
-        // 1. Validate inputs including organization details and document upload
-        $request->validate([
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'string', 'email', 'max:150', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:food_provider,recipient_organization'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string'],
-            // Verification document upload validation (PDF, JPG, PNG)
-            'verification_document' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
-        ]);
-
-        // 2. Handle file upload for verification document
-        $documentPath = null;
-        if ($request->hasFile('verification_document')) {
-            $documentPath = $request->file('verification_document')->store('verification_documents', 'public');
-        }
-
-        // 3. Create user with BRD-mandated defaults
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'role' => $request->role,
-            'verification_status' => 'Pending', // BRD Rule: defaults to Pending[cite: 3, 6]
-            'account_status' => 'Active',       // BRD Rule: defaults to Active[cite: 3, 9]
-            'document_path' => $documentPath,    // Store verification document path
-        ]);
-
-        // 4. Log the user in and redirect to dashboard
-        auth()->login($user);
-
-        return redirect()->route('dashboard')
-            ->with('success', 'Registration successful! Your account is currently Pending administrator verification.');
-    }
-
-    /**
-     * Handle user logout.
-     */
+    // LOGOUT
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login')
+            ->with('success', 'You have been logged out.');
     }
 }
