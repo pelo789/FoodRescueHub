@@ -6,18 +6,15 @@
     <title>Register - FoodRescue Hub</title>
     <!-- Tailwind CSS v4 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
     <style type="text/tailwindcss">
         @theme {
             --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
         }
     </style>
 </head>
-
 <body class="h-screen bg-linear-to-br from-green-50 via-[#f4f6f9] to-emerald-100 font-sans flex flex-col justify-between overflow-hidden relative">
 
-    <!-- DECORATIVE ECO WATERMARKS (OPTION 2: AMBIENT BACKGROUND PATTERN) -->
-    <!-- Top-Left Watermark Motif -->
+    <!-- DECORATIVE ECO WATERMARK -->
     <div class="absolute -top-16 -left-16 pointer-events-none opacity-[0.07] text-[#2E7D32] z-0">
         <svg class="w-96 h-96" fill="currentColor" viewBox="0 0 24 24">
             <path d="M17 8C8 10 59 16.17 3.82 21.34L5.23 22.76C10.4 17.58 17 8 17 8Z" />
@@ -40,7 +37,7 @@
         </a>
     </header>
 
-    <!-- FORM WRAPPER (CONTAINED TO FIT VIEWPORT WITHOUT SCROLLING) -->
+    <!-- FORM WRAPPER -->
     <main class="grow flex items-center justify-center px-4 py-2 overflow-y-auto z-10">
         <div class="w-full max-w-lg bg-white rounded-xl shadow-sm border border-gray-200 px-6 py-5 sm:px-8 sm:py-6">
 
@@ -93,7 +90,7 @@
                     <div id="step-1" class="space-y-2">
                         <div>
                             <h1 class="text-xl font-bold text-gray-900">Join FoodRescue Hub</h1>
-                            <p class="mt-2 text-xs text-gray-500">Food providers and recipient organizations can apply to participate in surplus food  redistribution through FoodRescue Hub.</p>
+                            <p class="mt-2 text-xs text-gray-500">Apply as a Food Provider or Recipient Organization to participate in surplus food redistribution.</p>
                         </div>
 
                         <div>
@@ -119,19 +116,12 @@
                             <input type="tel" id="phone" name="phone" value="{{ old('phone') }}" required placeholder="e.g., +63 912 345 6789"
                                 class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
                         </div>
-                        <div>
-                        <label for="address" class="block text-xs font-medium text-gray-700">
-                            Residential Address
-                        </label>
 
-                        <textarea
-                            id="address"
-                            name="address"
-                            rows="2"
-                            required
-                            placeholder="Enter your residential address"
-                            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">{{ old('address') }}</textarea>
-                    </div>
+                        <div>
+                            <label for="address" class="block text-xs font-medium text-gray-700">Residential Address</label>
+                            <textarea id="address" name="address" rows="2" required placeholder="Enter your residential address"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">{{ old('address') }}</textarea>
+                        </div>
 
                         <div>
                             <label for="password" class="block text-xs font-medium text-gray-700">Password</label>
@@ -163,7 +153,7 @@
                         <!-- VERIFICATION NOTICE -->
                         <div class="rounded-lg bg-green-50 border border-green-200 p-2.5">
                             <p class="text-xs text-green-800 font-medium leading-relaxed">
-                                Organizations must undergo administrator review before participating in food redistribution activities.
+                                Organizations undergo administrator review before participating in food redistribution activities.
                             </p>
                         </div>
 
@@ -173,18 +163,40 @@
                                 class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
                         </div>
 
+                        <!-- SELECTABLE RADIO CARDS FOR ROLE -->
                         <div>
-                            <label for="organization_type" class="block text-xs font-medium text-gray-700">Organization Type</label>
-                            <select id="organization_type" name="organization_type" required
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 bg-white focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
-                                <option value="">Select organization category</option>
-                                <option value="Restaurant" {{ old('organization_type') == 'Restaurant' ? 'selected' : '' }}>Restaurant</option>
-                                <option value="Bakery" {{ old('organization_type') == 'Bakery' ? 'selected' : '' }}>Bakery</option>
-                                <option value="Grocery Store" {{ old('organization_type') == 'Grocery Store' ? 'selected' : '' }}>Grocery Store</option>
-                                <option value="Catering Service" {{ old('organization_type') == 'Catering Service' ? 'selected' : '' }}>Catering Service</option>
-                                <option value="Recipient Organization" {{ old('organization_type') == 'Recipient Organization' ? 'selected' : '' }}>Recipient Organization</option>
-                                <option value="Community Organization" {{ old('organization_type') == 'Community Organization' ? 'selected' : '' }}>Community Organization</option>
-                            </select>
+                            <label class="block text-xs font-medium text-gray-700 mb-1.5">Select Organization Role</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <!-- FOOD PROVIDER CARD -->
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="role" value="food_provider" class="peer sr-only" required
+                                        {{ old('role') === 'food_provider' ? 'checked' : '' }}>
+                                    <div class="h-full rounded-lg border border-gray-300 bg-white p-3 transition-all hover:border-[#2E7D32]/60 peer-checked:border-[#2E7D32] peer-checked:bg-green-50/70 peer-checked:ring-1 peer-checked:ring-[#2E7D32]">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-xs font-bold text-gray-900">Food Provider</span>
+                                            <span class="h-3.5 w-3.5 rounded-full border border-gray-400 flex items-center justify-center peer-checked:border-[#2E7D32]"></span>
+                                        </div>
+                                        <p class="text-[11px] text-gray-600 leading-snug">
+                                            Donates surplus food. <span class="text-gray-500 block mt-0.5">e.g., Restaurants, Bakeries, Groceries, Catering</span>
+                                        </p>
+                                    </div>
+                                </label>
+
+                                <!-- RECIPIENT ORGANIZATION CARD -->
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="role" value="recipient_organization" class="peer sr-only" required
+                                        {{ old('role') === 'recipient_organization' ? 'checked' : '' }}>
+                                    <div class="h-full rounded-lg border border-gray-300 bg-white p-3 transition-all hover:border-[#2E7D32]/60 peer-checked:border-[#2E7D32] peer-checked:bg-green-50/70 peer-checked:ring-1 peer-checked:ring-[#2E7D32]">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-xs font-bold text-gray-900">Recipient Org</span>
+                                            <span class="h-3.5 w-3.5 rounded-full border border-gray-400 flex items-center justify-center"></span>
+                                        </div>
+                                        <p class="text-[11px] text-gray-600 leading-snug">
+                                            Receives &amp; distributes food. <span class="text-gray-500 block mt-0.5">e.g., NGOs, Charities, Community Orgs</span>
+                                        </p>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
 
                         <div>
@@ -255,7 +267,6 @@
             const stepTitleBadge = document.getElementById('step-title-badge');
 
             if (stepNumber === 2) {
-                // Client-side required field check for Step 1
                 const step1Inputs = step1.querySelectorAll('input[required]');
                 let valid = true;
                 step1Inputs.forEach(input => {
@@ -268,7 +279,6 @@
 
                 if (!valid) return;
 
-                // Client-side Password Match check
                 const password = document.getElementById('password').value;
                 const confirmPassword = document.getElementById('password_confirmation').value;
                 if (password !== confirmPassword) {
@@ -291,7 +301,6 @@
             }
         }
 
-        // Dynamic file name feedback state
         function updateFileName(input) {
             const feedback = document.getElementById('file-feedback');
             if (input.files && input.files[0]) {
@@ -303,8 +312,7 @@
             }
         }
 
-        // Auto-open Step 2 if backend returned validation errors for Step 2
-        @if ($errors->has('organization_name') || $errors->has('organization_type') || $errors->has('organization_address') || $errors->has('supporting_document'))
+        @if ($errors->has('role') || $errors->has('organization_name') || $errors->has('organization_address') || $errors->has('supporting_document'))
             goToStep(2);
         @endif
     </script>
