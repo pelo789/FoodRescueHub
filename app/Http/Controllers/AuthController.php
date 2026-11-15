@@ -31,8 +31,8 @@ class AuthController extends Controller
             ],
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:255',
+            'role' => 'required|in:food_provider,recipient_organization',
             'organization_name' => 'required|string|max:255',
-            'organization_type' => 'required|string|max:100',
             'organization_address' => 'required|string|max:255',
             'supporting_document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Max 5MB
         ]);
@@ -43,13 +43,6 @@ class AuthController extends Controller
             $documentPath = $request->file('supporting_document')->store('verification_documents', 'public');
         }
 
-        // Determine user role based on the organization type selected
-        $foodProviderTypes = ['Restaurant', 'Bakery', 'Grocery Store', 'Catering Service'];
-        
-        $assignedRole = in_array($validated['organization_type'], $foodProviderTypes) 
-            ? 'food_provider' 
-            : 'recipient_organization';
-
         $user = User::create([
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
@@ -57,21 +50,25 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'],
             'address' => $validated['address'],
-            'role' => $assignedRole,
+            'role' => $validated['role'],
             'status' => 'active', 
         ]);
+
+        $orgTypeLabel = $validated['role'] === 'food_provider' 
+            ? 'Food Provider' 
+            : 'Recipient Organization';
 
         $organization = Organization::create([
             'user_id' => $user->user_id,
             'organization_name' => $validated['organization_name'],
-            'organization_type' => $validated['organization_type'],
+            'organization_type' => $orgTypeLabel,
             'organization_address' => $validated['organization_address'],
             'verification_status' => 'Pending',
-            'verification_document' => $documentPath, // Save the stored file path
+            'verification_document' => $documentPath,
         ]);
 
         return redirect()->route('login')
-            ->with('success', 'Registration successful! Please login.');
+            ->with('registration_submitted', true);
     }
 
     // SHOW LOGIN PAGE
