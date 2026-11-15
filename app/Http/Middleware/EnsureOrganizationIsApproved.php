@@ -1,30 +1,27 @@
-<?php
-
+<?php 
 namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Auth;
 
-class EnsureOrganizationIsApproved
+class EnsureOrganizationIsVerified
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
+        $user = auth()->user();
 
-        // Check if user is authenticated and has an organization record
-        if ($user && $user->role !== 'admin') {
-            $organization = $user->organization; // Assuming a hasOne relationship on User model
+        // Admins bypass verification check
+        if ($user && in_array($user->role, ['admin', 'administrator'], true)) {
+            return $next($request);
+        }
 
-            // If organization is not approved, block access to redistribution features
-            if (!$organization || strtolower($organization->verification_status) !== 'approved') {
-                return redirect()->route('dashboard')
-                    ->with('error', 'Your organization verification is still pending. You cannot access redistribution features yet.');
-            }
+        // Check if user's organization is verified
+        $organization = $user->organization ?? null; // Make sure User model has organization() relation
+
+        if (!$organization || $organization->verification_status !== 'Verified') {
+            return redirect()->route('dashboard')
+                ->with('error', 'Your organization must be verified by an administrator to perform this action.');
         }
 
         return $next($request);
