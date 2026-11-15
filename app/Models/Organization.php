@@ -16,4 +16,10 @@ class Organization extends Model
         'verification_status',
         'verification_document'
     ];
+
+    // Links this organization back to its owner in the users table
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
 }
