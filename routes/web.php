@@ -1,8 +1,10 @@
+
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrganizationVerificationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\VerificationController;
+use Illuminate\Support\Facades\Route;
 
 // ROOT ROUTE
 Route::get('/', function () {
@@ -59,13 +61,26 @@ Route::middleware(['auth', 'account.active'])->group(function () {
                 VerificationController::class,
                 'reject'
             ])->name('verifications.reject');
+
+            Route::patch('/verifications/{user}/request-additional-information', [
+                VerificationController::class,
+                'requestAdditionalInformation'
+            ])->name('verifications.requestAdditionalInformation');
+
         });
+
+    // ORGANIZATION VERIFICATION RESUBMISSION
+    // Must remain outside organization.verified middleware.
+    Route::post('/organization/verification/resubmit', [
+        OrganizationVerificationController::class,
+        'resubmit'
+    ])->name('organization.verification.resubmit');
 
     // ORGANIZATION VERIFICATION PROTECTED ROUTES
     Route::middleware('organization.verified')->group(function () {
 
         // Food Provider and Recipient Organization
-        // redistribution feature routes will go here.
+        // Redistribution feature routes will go here.
 
     });
 

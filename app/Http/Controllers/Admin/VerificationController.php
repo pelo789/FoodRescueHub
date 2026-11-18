@@ -31,7 +31,6 @@ class VerificationController extends Controller
             $status = 'pending';
         }
 
-        // Convert URL status to the format used in the database.
         $databaseStatus = match ($status) {
             'pending' => 'Pending',
             'verified' => 'Verified',
@@ -39,7 +38,6 @@ class VerificationController extends Controller
             'additional information required' => 'Additional Information Required',
         };
 
-        // Retrieve organizations instead of user records.
         $organizations = Organization::with('user')
             ->where('verification_status', $databaseStatus)
             ->whereHas('user', function ($query) {
@@ -106,9 +104,9 @@ class VerificationController extends Controller
             'This organization has no available verification document.'
         );
 
-        $organization->update([
-            'verification_status' => 'Verified',
-        ]);
+        $organization->verification_status = 'Verified';
+        $organization->verification_remarks = null;
+        $organization->save();
 
         return redirect()
             ->route('admin.verifications.index')
@@ -131,15 +129,52 @@ class VerificationController extends Controller
             'This organization is no longer awaiting verification.'
         );
 
-        $organization->update([
-            'verification_status' => 'Rejected',
-        ]);
+        $organization->verification_status = 'Rejected';
+        $organization->verification_remarks = null;
+        $organization->save();
 
         return redirect()
             ->route('admin.verifications.index')
             ->with(
                 'success',
                 $organization->organization_name . ' has been rejected.'
+            );
+    }
+
+    /**
+     * Request additional information from an organization.
+     */
+    public function requestAdditionalInformation(
+        Request $request,
+        User $user
+    ): RedirectResponse {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:1000',
+        ]);
+
+        $organization = $this->getOrganization($user);
+
+        abort_if(
+            strtolower(trim($organization->verification_status)) !== 'pending',
+            403,
+            'This organization is no longer awaiting verification.'
+        );
+
+        $organization->verification_status =
+            'Additional Information Required';
+
+        $organization->verification_remarks = $validated['reason'];
+
+        $organization->save();
+
+        return redirect()
+            ->route('admin.verifications.index', [
+                'status' => 'additional information required',
+            ])
+            ->with(
+                'success',
+                'Additional information requested from '
+                . $organization->organization_name . '.'
             );
     }
 

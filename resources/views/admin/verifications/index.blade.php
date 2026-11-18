@@ -1,4 +1,3 @@
-
 @php
     $currentStatus = strtolower(request('status', 'pending'));
 
@@ -212,7 +211,7 @@
 
                                     @if (strtolower($organization->verification_status ?? 'pending') === 'pending')
 
-                                        <div class="flex flex-wrap justify-end gap-2">
+                                        <div class="flex flex-col items-end gap-3 min-w-48">
 
                                             <!-- APPROVE -->
                                             <form method="POST"
@@ -240,6 +239,31 @@
                                                 <button type="submit"
                                                         class="px-2.5 py-1 bg-red-600 text-white rounded hover:bg-red-700 font-medium">
                                                     Reject
+                                                </button>
+
+                                            </form>
+
+                                            <!-- REQUEST ADDITIONAL INFORMATION -->
+                                            <form method="POST"
+                                                  action="{{ route('admin.verifications.requestAdditionalInformation', $organization->user_id) }}"
+                                                  onsubmit="return confirm('Request additional information from this organization?')"
+                                                  class="w-full">
+
+                                                @csrf
+                                                @method('PATCH')
+
+                                                <textarea
+                                                    name="reason"
+                                                    required
+                                                    maxlength="1000"
+                                                    rows="3"
+                                                    placeholder="Explain what needs to be corrected..."
+                                                    class="w-full border border-gray-300 rounded p-2 text-xs resize-y focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                                ></textarea>
+
+                                                <button type="submit"
+                                                        class="w-full mt-1 px-2.5 py-1.5 bg-yellow-500 text-white rounded hover:bg-yellow-600 font-medium">
+                                                    Request Additional Information
                                                 </button>
 
                                             </form>

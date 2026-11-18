@@ -1,5 +1,4 @@
 
-
 @php
     $user = auth()->user();
 
@@ -278,15 +277,84 @@
 
                 @elseif ($verificationStatus === 'additional information required')
 
-                    <div class="rounded-lg bg-amber-50 border border-amber-200 p-4 shadow-xs">
-                        <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wider mb-1">
+                    <!-- ADDITIONAL INFORMATION REQUIRED -->
+                    <div class="rounded-lg bg-amber-50 border border-amber-200 p-5 shadow-xs">
+
+                        <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wider mb-2">
                             Additional Information Required
                         </h3>
 
-                        <p class="text-xs text-amber-800 leading-relaxed">
-                            The administrator requested additional documentation or clarification
-                            for your organization before approving verification.
+                        <p class="text-xs text-amber-800 leading-relaxed mb-4">
+                            The administrator has reviewed your organization's verification
+                            request and requires additional information or a corrected document.
+                            Please read the administrator's remarks and submit an updated document.
                         </p>
+
+                        <!-- ADMINISTRATOR REMARKS -->
+                        <div class="bg-white border border-amber-200 rounded-lg p-4 mb-5">
+
+                            <h4 class="text-xs font-bold text-gray-900 mb-2">
+                                Administrator's Remarks
+                            </h4>
+
+                            <p class="text-xs text-gray-700 leading-relaxed whitespace-pre-line">
+                                {{ $organization?->verification_remarks ?: 'No specific remarks were provided. Please contact the administrator for clarification.' }}
+                            </p>
+
+                        </div>
+
+                        <!-- DOCUMENT RESUBMISSION FORM -->
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+
+                            <h4 class="text-xs font-bold text-gray-900 mb-2">
+                                Submit Updated Verification Document
+                            </h4>
+
+                            <p class="text-xs text-gray-500 mb-4">
+                                Upload a corrected verification document in PDF, JPG, JPEG, or PNG format.
+                                Maximum file size is 5 MB.
+                            </p>
+
+                            <form
+                                action="{{ route('organization.verification.resubmit') }}"
+                                method="POST"
+                                enctype="multipart/form-data"
+                            >
+
+                                @csrf
+
+                                <label for="verification_document"
+                                       class="block text-xs font-semibold text-gray-700 mb-2">
+                                    Verification Document
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id="verification_document"
+                                    name="verification_document"
+                                    accept=".pdf,.jpg,.jpeg,.png"
+                                    required
+                                    class="block w-full text-xs text-gray-600 border border-gray-300 rounded-md p-2 mb-3"
+                                >
+
+                                @error('verification_document')
+                                    <p class="text-xs text-red-600 mb-3">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+
+                                <button
+                                    type="submit"
+                                    onclick="return confirm('Are you sure you want to submit this updated verification document?')"
+                                    class="px-4 py-2 bg-[#2E7D32] text-white text-xs font-semibold rounded-md hover:bg-green-800 transition-colors cursor-pointer"
+                                >
+                                    Resubmit for Verification
+                                </button>
+
+                            </form>
+
+                        </div>
+
                     </div>
 
                 @else

@@ -9,13 +9,14 @@ class Organization extends Model
     protected $primaryKey = 'organization_id';
 
     protected $fillable = [
-        'user_id',
-        'organization_name',
-        'organization_type',
-        'organization_address',
-        'verification_status',
-        'verification_document'
-    ];
+    'user_id',
+    'organization_name',
+    'organization_type',
+    'organization_address',
+    'verification_status',
+    'verification_document',
+    'verification_remarks',
+];
 
     // Links this organization back to its owner in the users table
     public function user()
