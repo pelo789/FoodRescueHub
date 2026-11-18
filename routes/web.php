@@ -1,16 +1,15 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\VerificationController;
 
+// ROOT ROUTE
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// GUEST ROUTES (Login & Register)
+// GUEST ROUTES
 Route::middleware('guest')->group(function () {
 
     Route::get('/register', [AuthController::class, 'showRegister'])
@@ -27,8 +26,8 @@ Route::middleware('guest')->group(function () {
         ->name('login.submit');
 });
 
-// AUTHENTICATED ROUTES
-Route::middleware('auth')->group(function () {
+// AUTHENTICATED AND ACTIVE ACCOUNT ROUTES
+Route::middleware(['auth', 'account.active'])->group(function () {
 
     // UNIFIED DASHBOARD
     Route::get('/dashboard', function () {
@@ -36,18 +35,38 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     // ADMIN VERIFICATION MANAGEMENT
-    Route::get('/admin/verifications', [AdminController::class, 'index'])
-        ->name('admin.verifications');
+    Route::middleware('administrator')
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
 
-    Route::get('/admin/verifications/{id}', [AdminController::class, 'show'])
-        ->name('admin.verifications.show');
+            Route::get('/verifications', [
+                VerificationController::class,
+                'index'
+            ])->name('verifications.index');
 
-    Route::post('/admin/verifications/{id}/update', [AdminController::class, 'updateStatus'])
-        ->name('admin.verifications.update');
+            Route::get('/verifications/{user}/document', [
+                VerificationController::class,
+                'viewDocument'
+            ])->name('verifications.document');
 
-    // PROTECTED ACTION ROUTES
-    Route::middleware('verified.org')->group(function () {
-        // Food Provider & Recipient Organization routes
+            Route::patch('/verifications/{user}/approve', [
+                VerificationController::class,
+                'approve'
+            ])->name('verifications.approve');
+
+            Route::patch('/verifications/{user}/reject', [
+                VerificationController::class,
+                'reject'
+            ])->name('verifications.reject');
+        });
+
+    // ORGANIZATION VERIFICATION PROTECTED ROUTES
+    Route::middleware('organization.verified')->group(function () {
+
+        // Food Provider and Recipient Organization
+        // redistribution feature routes will go here.
+
     });
 
     // LOGOUT

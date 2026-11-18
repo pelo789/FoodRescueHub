@@ -3,7 +3,10 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Http\Middleware\EnsureOrganizationIsVerified; // <-- 1. Import your middleware
+
+use App\Http\Middleware\EnsureAccountIsActive;
+use App\Http\Middleware\EnsureOrganizationIsVerified;
+use App\Http\Middleware\EnsureAdministrator;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,10 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // 2. Register the alias here
+
         $middleware->alias([
-            'verified.org' => EnsureOrganizationIsVerified::class,
+            'account.active' => EnsureAccountIsActive::class,
+            'organization.verified' => EnsureOrganizationIsVerified::class,
+            'administrator' => EnsureAdministrator::class,
         ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

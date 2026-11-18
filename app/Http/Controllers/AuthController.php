@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,76 +10,72 @@ use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    // SHOW REGISTER PAGE
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    // REGISTER USER
     public function register(Request $request)
     {
         $validated = $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
+            'organization_name' => 'required|string|max:150',
+
+            'role' => 'required|in:food_provider,recipient_organization',
+
             'email' => 'required|email|max:150|unique:users,email',
+
             'password' => [
                 'required',
                 'confirmed',
                 Password::min(8),
             ],
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:255',
-            'organization_name' => 'required|string|max:255',
-            'organization_type' => 'required|string|max:100',
-            'organization_address' => 'required|string|max:255',
-            'supporting_document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Max 5MB
+
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+
+            'verification_document' =>
+                'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
-        // Handle file upload
-        $documentPath = null;
-        if ($request->hasFile('supporting_document')) {
-            $documentPath = $request->file('supporting_document')->store('verification_documents', 'public');
-        }
+        // Store verification document privately.
+        $documentPath = $validated['verification_document']
+            ->store('verification-documents', 'local');
 
-        // Determine user role based on the organization type selected
-        $foodProviderTypes = ['Restaurant', 'Bakery', 'Grocery Store', 'Catering Service'];
-        
-        $assignedRole = in_array($validated['organization_type'], $foodProviderTypes) 
-            ? 'food_provider' 
-            : 'recipient_organization';
-
-        $user = User::create([
+        // Create user and organization information in users table.
+        User::create([
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
+            'organization_name' => $validated['organization_name'],
+
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'phone' => $validated['phone'],
-            'address' => $validated['address'],
-            'role' => $assignedRole,
-            'status' => 'active', 
-        ]);
 
-        $organization = Organization::create([
-            'user_id' => $user->user_id,
-            'organization_name' => $validated['organization_name'],
-            'organization_type' => $validated['organization_type'],
-            'organization_address' => $validated['organization_address'],
-            'verification_status' => 'Pending',
-            'verification_document' => $documentPath, // Save the stored file path
+            'phone' => $validated['phone'] ?? null,
+            'address' => $validated['address'] ?? null,
+
+            'role' => $validated['role'],
+
+            // Account status and verification status are separate.
+            'status' => 'active',
+            'verification_status' => 'pending',
+
+            'verification_document' => $documentPath,
         ]);
 
         return redirect()->route('login')
-            ->with('success', 'Registration successful! Please login.');
+            ->with(
+                'success',
+                'Registration successful! Your organization is awaiting verification. You may log in, but redistribution features will remain unavailable until approval.'
+            );
     }
 
-    // SHOW LOGIN PAGE
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    // LOGIN USER
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -88,41 +83,42 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Attempt authentication using email and password only (removing hardcoded status check here)
         if (Auth::attempt($credentials)) {
+
             $user = Auth::user();
 
-            // Handle Banned / Suspended / Deactivated account statuses
-            if ($user->status === 'inactive' || $user->status === 'banned') {
+            // Only active accounts can access the system.
+            if ($user->status !== 'active') {
+
                 Auth::logout();
+
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
                 return back()
-                    ->withErrors(['email' => 'Your account is inactive or suspended.'])
+                    ->withErrors([
+                        'email' => 'Your account is inactive, suspended, or deactivated.',
+                    ])
                     ->onlyInput('email');
             }
 
             $request->session()->regenerate();
 
-            // Role-based redirection after login
-            if ($user->role === 'admin') {
-                return redirect()->route('dashboard');
-            } elseif ($user->role === 'food_provider') {
-                return redirect()->route('dashboard');
-            } else {
+            // All authorized roles enter the dashboard.
+            if ($user->isAdministrator()) {
                 return redirect()->route('dashboard');
             }
+
+            return redirect()->route('dashboard');
         }
 
         return back()
             ->withErrors([
-                'email' => 'Invalid credentials.',
+                'email' => 'Invalid credentials or your account is inactive.',
             ])
             ->onlyInput('email');
     }
 
-    // LOGOUT
     public function logout(Request $request)
     {
         Auth::logout();

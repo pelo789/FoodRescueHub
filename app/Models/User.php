@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,11 +10,9 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    // --- ADD THESE THREE LINES ---
     protected $primaryKey = 'user_id';
     public $incrementing = true;
     protected $keyType = 'int';
-    // -----------------------------
 
     protected $fillable = [
         'first_name',
@@ -24,8 +21,11 @@ class User extends Authenticatable
         'password',
         'phone',
         'address',
+        'organization_name',
         'role',
         'status',
+        'verification_status',
+        'verification_document',
     ];
 
     protected $hidden = [
@@ -37,9 +37,33 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // ADD THIS RELATIONSHIP METHOD HERE:
+    // ORGANIZATION RELATIONSHIP
     public function organization()
     {
         return $this->hasOne(Organization::class, 'user_id', 'user_id');
+    }
+
+    // CHECK IF USER IS AN ADMINISTRATOR
+    public function isAdministrator(): bool
+    {
+        return in_array($this->role, ['administrator', 'admin'], true);
+    }
+
+    // CHECK IF ORGANIZATION IS VERIFIED
+    public function isOrganizationVerified(): bool
+    {
+        return strtolower(trim($this->verification_status ?? '')) === 'verified';
+    }
+
+    // CHECK IF USER CAN PARTICIPATE IN FOOD REDISTRIBUTION
+    public function canParticipateInRedistribution(): bool
+    {
+        return $this->status === 'active'
+            && $this->isOrganizationVerified()
+            && in_array(
+                $this->role,
+                ['food_provider', 'recipient_organization'],
+                true
+            );
     }
 }

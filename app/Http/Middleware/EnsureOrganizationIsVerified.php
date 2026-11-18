@@ -15,13 +15,31 @@ class EnsureOrganizationIsVerified
     {
         $user = $request->user();
 
-        // Check if user is logged in and NOT verified
-        if ($user && $user->verification_status !== 'Verified') {
-            // Administrators are exempt from this restriction
-            if ($user->role !== 'administrator') {
-                return redirect()->route('dashboard')
-                    ->with('error', 'Your organization verification status is currently "' . $user->verification_status . '". You must be verified by an administrator to perform this action.');
-            }
+        // Redirect unauthenticated users to login.
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Administrators are exempt from organization verification.
+        if ($user->isAdministrator()) {
+            return $next($request);
+        }
+
+        // Only food providers and recipient organizations
+        // require verification before redistribution activities.
+        if (
+            in_array(
+                $user->role,
+                ['food_provider', 'recipient_organization'],
+                true
+            )
+            && !$user->isOrganizationVerified()
+        ) {
+            return redirect()->route('dashboard')
+                ->with(
+                    'error',
+                    'Your organization must be verified before participating in redistribution activities.'
+                );
         }
 
         return $next($request);

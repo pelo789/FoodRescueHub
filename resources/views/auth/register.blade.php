@@ -1,18 +1,21 @@
+
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - FoodRescue Hub</title>
-    <!-- Tailwind CSS v4 CDN -->
+
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
     <style type="text/tailwindcss">
         @theme {
             --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
         }
     </style>
 </head>
-<body class="h-screen bg-linear-to-br from-green-50 via-[#f4f6f9] to-emerald-100 font-sans flex flex-col justify-between overflow-hidden relative">
+
+<body class="min-h-screen bg-linear-to-br from-green-50 via-[#f4f6f9] to-emerald-100 font-sans flex flex-col justify-between relative">
 
     <!-- DECORATIVE ECO WATERMARK -->
     <div class="absolute -top-16 -left-16 pointer-events-none opacity-[0.07] text-[#2E7D32] z-0">
@@ -32,47 +35,68 @@
                 <path d="M10 9.5v3" />
                 <path d="M14 9.5v3" />
             </svg>
-            <span class="text-lg font-bold text-gray-900 tracking-wide whitespace-nowrap">FoodRescue Hub</span>
-            <span class="hidden lg:block text-xs text-gray-500 ml-2">Reducing food waste through verified community partnerships.</span>
+
+            <span class="text-lg font-bold text-gray-900 tracking-wide whitespace-nowrap">
+                FoodRescue Hub
+            </span>
+
+            <span class="hidden lg:block text-xs text-gray-500 ml-2">
+                Reducing food waste through verified community partnerships.
+            </span>
         </a>
     </header>
 
-    <!-- FORM WRAPPER -->
-    <main class="grow flex items-center justify-center px-4 py-2 overflow-y-auto z-10">
+    <!-- REGISTRATION FORM -->
+    <main class="grow flex items-center justify-center px-4 py-6 z-10">
+
         <div class="w-full max-w-lg bg-white rounded-xl shadow-sm border border-gray-200 px-6 py-5 sm:px-8 sm:py-6">
 
             <!-- SUCCESS STATE -->
             @if (session('registration_submitted'))
+
                 <div class="text-center py-4">
                     <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
                         <svg class="h-6 w-6 text-[#2E7D32]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <h2 class="text-xl font-bold text-gray-900">Registration Submitted</h2>
+
+                    <h2 class="text-xl font-bold text-gray-900">
+                        Registration Submitted
+                    </h2>
+
                     <p class="mt-2 text-xs text-gray-600 leading-relaxed max-w-sm mx-auto">
-                        Your organization application has been received and is currently under review. You will be notified once verification is completed.
+                        Your organization application has been received and is currently under review.
                     </p>
+
                     <div class="mt-6">
-                        <a href="{{ route('login') }}" class="inline-block bg-[#2E7D32] hover:bg-[#1B5E20] px-5 py-2 rounded-md text-xs font-semibold text-white transition-colors">
+                        <a href="{{ route('login') }}"
+                           class="inline-block bg-[#2E7D32] hover:bg-[#1B5E20] px-5 py-2 rounded-md text-xs font-semibold text-white transition-colors">
                             Return to Login
                         </a>
                     </div>
                 </div>
+
             @else
 
-                <!-- PROGRESS INDICATOR STEPPER -->
+                <!-- PROGRESS INDICATOR -->
                 <div class="mb-4">
                     <div class="flex items-center justify-between mb-1.5">
-                        <span id="step-label" class="text-[11px] font-bold uppercase tracking-wider text-[#2E7D32]">Step 1 of 2</span>
-                        <span id="step-title-badge" class="text-[11px] font-semibold text-gray-500">Account Credentials</span>
+                        <span id="step-label" class="text-[11px] font-bold uppercase tracking-wider text-[#2E7D32]">
+                            Step 1 of 2
+                        </span>
+
+                        <span id="step-title-badge" class="text-[11px] font-semibold text-gray-500">
+                            Account Credentials
+                        </span>
                     </div>
+
                     <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
                         <div id="progress-bar" class="bg-[#2E7D32] h-full w-1/2 transition-all duration-300 ease-in-out"></div>
                     </div>
                 </div>
-                
-                <!-- GLOBAL VALIDATION ERRORS -->
+
+                <!-- VALIDATION ERRORS -->
                 @if ($errors->any())
                     <div class="mb-3 rounded-md border border-red-200 bg-red-50 p-2.5">
                         <ul class="list-disc list-inside text-xs text-red-600 font-medium space-y-0.5">
@@ -83,71 +107,127 @@
                     </div>
                 @endif
 
-                <form id="registration-form" method="POST" action="{{ route('register.submit') }}" enctype="multipart/form-data">
+                <form id="registration-form"
+                      method="POST"
+                      action="{{ route('register.submit') }}"
+                      enctype="multipart/form-data">
+
                     @csrf
 
                     <!-- STEP 1: ACCOUNT INFORMATION -->
                     <div id="step-1" class="space-y-2">
-                        <div>
-                            <h1 class="text-xl font-bold text-gray-900">Join FoodRescue Hub</h1>
-                            <p class="mt-2 text-xs text-gray-500">Apply as a Food Provider or Recipient Organization to participate in surplus food redistribution.</p>
-                        </div>
 
                         <div>
-                            <label for="first_name" class="block text-xs font-medium text-gray-700">First Name</label>
-                            <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}" required placeholder="e.g., Juan"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
+                            <h1 class="text-xl font-bold text-gray-900">
+                                Join FoodRescue Hub
+                            </h1>
+
+                            <p class="mt-2 text-xs text-gray-500">
+                                Create your account to apply as a Food Provider or Recipient Organization.
+                            </p>
                         </div>
 
+                        <!-- FIRST NAME -->
                         <div>
-                            <label for="last_name" class="block text-xs font-medium text-gray-700">Last Name</label>
-                            <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" required placeholder="e.g., dela Cruz"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
+                            <label for="first_name" class="block text-xs font-medium text-gray-700">
+                                First Name
+                            </label>
+
+                            <input type="text"
+                                   id="first_name"
+                                   name="first_name"
+                                   value="{{ old('first_name') }}"
+                                   maxlength="100"
+                                   required
+                                   placeholder="e.g., Juan"
+                                   class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
                         </div>
 
+                        <!-- LAST NAME -->
                         <div>
-                            <label for="email" class="block text-xs font-medium text-gray-700">Email Address</label>
-                            <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="email@organization.org"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
+                            <label for="last_name" class="block text-xs font-medium text-gray-700">
+                                Last Name
+                            </label>
+
+                            <input type="text"
+                                   id="last_name"
+                                   name="last_name"
+                                   value="{{ old('last_name') }}"
+                                   maxlength="100"
+                                   required
+                                   placeholder="e.g., dela Cruz"
+                                   class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
                         </div>
 
+                        <!-- EMAIL -->
                         <div>
-                            <label for="phone" class="block text-xs font-medium text-gray-700">Contact Number</label>
-                            <input type="tel" id="phone" name="phone" value="{{ old('phone') }}" required placeholder="e.g., +63 912 345 6789"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
+                            <label for="email" class="block text-xs font-medium text-gray-700">
+                                Email Address
+                            </label>
+
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   value="{{ old('email') }}"
+                                   maxlength="150"
+                                   required
+                                   placeholder="email@organization.org"
+                                   class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
                         </div>
 
+                        <!-- PASSWORD -->
                         <div>
-                            <label for="address" class="block text-xs font-medium text-gray-700">Residential Address</label>
-                            <textarea id="address" name="address" rows="2" required placeholder="Enter your residential address"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">{{ old('address') }}</textarea>
+                            <label for="password" class="block text-xs font-medium text-gray-700">
+                                Password
+                            </label>
+
+                            <input type="password"
+                                   id="password"
+                                   name="password"
+                                   minlength="8"
+                                   required
+                                   placeholder="At least 8 characters"
+                                   class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
                         </div>
 
+                        <!-- CONFIRM PASSWORD -->
                         <div>
-                            <label for="password" class="block text-xs font-medium text-gray-700">Password</label>
-                            <input type="password" id="password" name="password" required placeholder="At least 8 characters"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
+                            <label for="password_confirmation" class="block text-xs font-medium text-gray-700">
+                                Confirm Password
+                            </label>
+
+                            <input type="password"
+                                   id="password_confirmation"
+                                   name="password_confirmation"
+                                   minlength="8"
+                                   required
+                                   placeholder="Re-enter password"
+                                   class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
                         </div>
 
-                        <div>
-                            <label for="password_confirmation" class="block text-xs font-medium text-gray-700">Confirm Password</label>
-                            <input type="password" id="password_confirmation" name="password_confirmation" required placeholder="Re-enter password"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
-                        </div>
-
+                        <!-- NEXT BUTTON -->
                         <div class="pt-2 flex justify-end">
-                            <button type="button" id="btn-next" onclick="goToStep(2)"
-                                class="w-full sm:w-auto px-5 py-2 rounded-md bg-[#2E7D32] hover:bg-[#1B5E20] text-xs font-bold text-white transition-colors cursor-pointer shadow-sm">
+                            <button type="button"
+                                    id="btn-next"
+                                    onclick="goToStep(2)"
+                                    class="w-full sm:w-auto px-5 py-2 rounded-md bg-[#2E7D32] hover:bg-[#1B5E20] text-xs font-bold text-white transition-colors cursor-pointer shadow-sm">
                                 Continue →
                             </button>
                         </div>
+
                     </div>
 
                     <!-- STEP 2: ORGANIZATION VERIFICATION -->
                     <div id="step-2" class="hidden space-y-3">
+
                         <div>
-                            <h1 class="text-xl font-bold text-gray-900">Organization Details</h1>
-                            <p class="text-xs text-gray-600 mt-0.5">Provide business details and verification documents.</p>
+                            <h1 class="text-xl font-bold text-gray-900">
+                                Organization Details
+                            </h1>
+
+                            <p class="text-xs text-gray-600 mt-0.5">
+                                Provide your organization information and verification documents.
+                            </p>
                         </div>
 
                         <!-- VERIFICATION NOTICE -->
@@ -157,76 +237,160 @@
                             </p>
                         </div>
 
+                        <!-- PHONE -->
                         <div>
-                            <label for="organization_name" class="block text-xs font-medium text-gray-700">Organization Name</label>
-                            <input type="text" id="organization_name" name="organization_name" value="{{ old('organization_name') }}" required placeholder="Registered business or NGO name"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
+                            <label for="phone" class="block text-xs font-medium text-gray-700">
+                                Contact Number
+                            </label>
+
+                            <input type="tel"
+                                   id="phone"
+                                   name="phone"
+                                   value="{{ old('phone') }}"
+                                   maxlength="20"
+                                   required
+                                   placeholder="e.g., +63 912 345 6789"
+                                   class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
                         </div>
 
-                        <!-- SELECTABLE RADIO CARDS FOR ROLE -->
+                        <!-- ORGANIZATION NAME -->
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1.5">Select Organization Role</label>
+                            <label for="organization_name" class="block text-xs font-medium text-gray-700">
+                                Organization Name
+                            </label>
+
+                            <input type="text"
+                                   id="organization_name"
+                                   name="organization_name"
+                                   value="{{ old('organization_name') }}"
+                                   maxlength="150"
+                                   required
+                                   placeholder="Registered business or NGO name"
+                                   class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
+                        </div>
+
+                        <!-- ORGANIZATION ADDRESS -->
+                        <div>
+                            <label for="address" class="block text-xs font-medium text-gray-700">
+                                Organization Address
+                            </label>
+
+                            <textarea id="address"
+                                      name="address"
+                                      rows="2"
+                                      maxlength="255"
+                                      required
+                                      placeholder="Full physical address of your organization"
+                                      class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">{{ old('address') }}</textarea>
+                        </div>
+
+                        <!-- ORGANIZATION ROLE -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1.5">
+                                Select Organization Role
+                            </label>
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                <!-- FOOD PROVIDER CARD -->
+
+                                <!-- FOOD PROVIDER -->
                                 <label class="relative cursor-pointer">
-                                    <input type="radio" name="role" value="food_provider" class="peer sr-only" required
-                                        {{ old('role') === 'food_provider' ? 'checked' : '' }}>
+                                    <input type="radio"
+                                           name="role"
+                                           value="food_provider"
+                                           class="peer sr-only"
+                                           required
+                                           {{ old('role') === 'food_provider' ? 'checked' : '' }}>
+
                                     <div class="h-full rounded-lg border border-gray-300 bg-white p-3 transition-all hover:border-[#2E7D32]/60 peer-checked:border-[#2E7D32] peer-checked:bg-green-50/70 peer-checked:ring-1 peer-checked:ring-[#2E7D32]">
+
                                         <div class="flex items-center justify-between mb-1">
-                                            <span class="text-xs font-bold text-gray-900">Food Provider</span>
-                                            <span class="h-3.5 w-3.5 rounded-full border border-gray-400 flex items-center justify-center peer-checked:border-[#2E7D32]"></span>
+                                            <span class="text-xs font-bold text-gray-900">
+                                                Food Provider
+                                            </span>
+
+                                            <span class="h-3.5 w-3.5 rounded-full border border-gray-400"></span>
                                         </div>
+
                                         <p class="text-[11px] text-gray-600 leading-snug">
-                                            Donates surplus food. <span class="text-gray-500 block mt-0.5">e.g., Restaurants, Bakeries, Groceries, Catering</span>
+                                            Donates surplus food.
+
+                                            <span class="text-gray-500 block mt-0.5">
+                                                e.g., Restaurants, Bakeries, Groceries, Catering
+                                            </span>
                                         </p>
                                     </div>
                                 </label>
 
-                                <!-- RECIPIENT ORGANIZATION CARD -->
+                                <!-- RECIPIENT ORGANIZATION -->
                                 <label class="relative cursor-pointer">
-                                    <input type="radio" name="role" value="recipient_organization" class="peer sr-only" required
-                                        {{ old('role') === 'recipient_organization' ? 'checked' : '' }}>
+                                    <input type="radio"
+                                           name="role"
+                                           value="recipient_organization"
+                                           class="peer sr-only"
+                                           required
+                                           {{ old('role') === 'recipient_organization' ? 'checked' : '' }}>
+
                                     <div class="h-full rounded-lg border border-gray-300 bg-white p-3 transition-all hover:border-[#2E7D32]/60 peer-checked:border-[#2E7D32] peer-checked:bg-green-50/70 peer-checked:ring-1 peer-checked:ring-[#2E7D32]">
+
                                         <div class="flex items-center justify-between mb-1">
-                                            <span class="text-xs font-bold text-gray-900">Recipient Org</span>
-                                            <span class="h-3.5 w-3.5 rounded-full border border-gray-400 flex items-center justify-center"></span>
+                                            <span class="text-xs font-bold text-gray-900">
+                                                Recipient Organization
+                                            </span>
+
+                                            <span class="h-3.5 w-3.5 rounded-full border border-gray-400"></span>
                                         </div>
+
                                         <p class="text-[11px] text-gray-600 leading-snug">
-                                            Receives &amp; distributes food. <span class="text-gray-500 block mt-0.5">e.g., NGOs, Charities, Community Orgs</span>
+                                            Receives and distributes food.
+
+                                            <span class="text-gray-500 block mt-0.5">
+                                                e.g., NGOs, Charities, Community Organizations
+                                            </span>
                                         </p>
                                     </div>
                                 </label>
+
                             </div>
                         </div>
 
+                        <!-- VERIFICATION DOCUMENT -->
                         <div>
-                            <label for="organization_address" class="block text-xs font-medium text-gray-700">Organization Address</label>
-                            <textarea id="organization_address" name="organization_address" rows="2" required placeholder="Full physical address for pickup/delivery routing"
-                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-xs text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">{{ old('organization_address') }}</textarea>
-                        </div>
+                            <label for="verification_document" class="block text-xs font-medium text-gray-700 mb-1">
+                                Supporting Document Upload
+                            </label>
 
-                        <!-- DROP ZONE UPLOAD AREA -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Supporting Document Upload</label>
                             <div class="border-2 border-dashed border-gray-300 rounded-lg p-3 text-center hover:border-[#2E7D32] transition-colors bg-gray-50/50">
-                                <input type="file" id="supporting_document" name="supporting_document" accept=".pdf,.jpg,.jpeg,.png" required
-                                    onchange="updateFileName(this)"
-                                    class="block w-full text-xs text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-green-50 file:text-[#2E7D32] hover:file:bg-green-100 cursor-pointer">
-                                <p id="file-feedback" class="mt-1 text-[11px] text-gray-500">Business Permit, Registration Certificate, or Proof of Org (PDF, JPG, PNG up to 5MB).</p>
+
+                                <input type="file"
+                                       id="verification_document"
+                                       name="verification_document"
+                                       accept=".pdf,.jpg,.jpeg,.png"
+                                       required
+                                       onchange="updateFileName(this)"
+                                       class="block w-full text-xs text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-green-50 file:text-[#2E7D32] hover:file:bg-green-100 cursor-pointer">
+
+                                <p id="file-feedback" class="mt-1 text-[11px] text-gray-500">
+                                    Business Permit, Registration Certificate, or Proof of Organization (PDF, JPG, PNG up to 5MB).
+                                </p>
                             </div>
                         </div>
 
-                        <!-- BUTTON HIERARCHY -->
+                        <!-- NAVIGATION BUTTONS -->
                         <div class="pt-3 flex items-center justify-between gap-3 border-t border-gray-100">
-                            <button type="button" onclick="goToStep(1)"
-                                class="px-4 py-2 rounded-md text-xs font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
+
+                            <button type="button"
+                                    onclick="goToStep(1)"
+                                    class="px-4 py-2 rounded-md text-xs font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors cursor-pointer">
                                 ← Back
                             </button>
+
                             <button type="submit"
-                                class="px-6 py-2 rounded-md bg-[#2E7D32] hover:bg-[#1B5E20] text-xs font-bold text-white shadow-sm transition-all duration-200 cursor-pointer">
+                                    class="px-6 py-2 rounded-md bg-[#2E7D32] hover:bg-[#1B5E20] text-xs font-bold text-white shadow-sm transition-all duration-200 cursor-pointer">
                                 Submit Registration
                             </button>
+
                         </div>
+
                     </div>
 
                 </form>
@@ -237,7 +401,10 @@
             @unless(session('registration_submitted'))
                 <p class="mt-4 text-center text-xs text-gray-600">
                     Already have an account?
-                    <a href="{{ route('login') }}" class="font-semibold text-[#2E7D32] hover:underline">Sign In</a>
+
+                    <a href="{{ route('login') }}" class="font-semibold text-[#2E7D32] hover:underline">
+                        Sign In
+                    </a>
                 </p>
             @endunless
 
@@ -246,75 +413,131 @@
 
     <!-- FOOTER -->
     <footer class="w-full bg-[#1B5E20] text-white py-2.5 px-8 border-t border-green-900 shrink-0 z-10">
+
         <div class="flex flex-col md:flex-row items-center justify-between gap-1 text-[11px]">
+
             <div>
                 <span class="font-bold text-xs">FoodRescue Hub</span>
-                <span class="text-green-100 ml-2">Surplus Food Management and Redistribution System</span>
+
+                <span class="text-green-100 ml-2">
+                    Surplus Food Management and Redistribution System
+                </span>
             </div>
+
             <p class="text-green-100">
                 © {{ date('Y') }} FoodRescue Hub
             </p>
+
         </div>
     </footer>
 
     <!-- STEP TOGGLE AND VALIDATION SCRIPT -->
     <script>
+
         function goToStep(stepNumber) {
+
             const step1 = document.getElementById('step-1');
             const step2 = document.getElementById('step-2');
+
             const progressBar = document.getElementById('progress-bar');
             const stepLabel = document.getElementById('step-label');
             const stepTitleBadge = document.getElementById('step-title-badge');
 
             if (stepNumber === 2) {
+
+                // Validate Step 1 fields.
                 const step1Inputs = step1.querySelectorAll('input[required]');
-                let valid = true;
-                step1Inputs.forEach(input => {
-                    if (!input.value.trim()) {
+
+                for (const input of step1Inputs) {
+
+                    if (!input.checkValidity()) {
                         input.reportValidity();
-                        valid = false;
-                        return false;
+                        return;
                     }
-                });
 
-                if (!valid) return;
+                }
 
+                // Check password confirmation.
                 const password = document.getElementById('password').value;
                 const confirmPassword = document.getElementById('password_confirmation').value;
+
                 if (password !== confirmPassword) {
+
                     alert("Passwords do not match. Please verify.");
+
                     document.getElementById('password_confirmation').focus();
+
                     return;
                 }
 
+                // Show Step 2.
                 step1.classList.add('hidden');
                 step2.classList.remove('hidden');
+
                 progressBar.style.width = '100%';
+
                 stepLabel.textContent = 'Step 2 of 2';
                 stepTitleBadge.textContent = 'Organization Verification';
+
             } else {
+
+                // Return to Step 1.
                 step2.classList.add('hidden');
                 step1.classList.remove('hidden');
+
                 progressBar.style.width = '50%';
+
                 stepLabel.textContent = 'Step 1 of 2';
                 stepTitleBadge.textContent = 'Account Credentials';
+
             }
+
         }
 
+        // Display selected document name.
         function updateFileName(input) {
+
             const feedback = document.getElementById('file-feedback');
+
             if (input.files && input.files[0]) {
+
                 feedback.textContent = "Selected file: " + input.files[0].name;
-                feedback.classList.add("text-[#2E7D32]", "font-semibold");
+
+                feedback.classList.add(
+                    "text-[#2E7D32]",
+                    "font-semibold"
+                );
+
             } else {
-                feedback.textContent = "Business Permit, Registration Certificate, or Proof of Org (PDF, JPG, PNG up to 5MB).";
-                feedback.classList.remove("text-[#2E7D32]", "font-semibold");
+
+                feedback.textContent =
+                    "Business Permit, Registration Certificate, or Proof of Organization (PDF, JPG, PNG up to 5MB).";
+
+                feedback.classList.remove(
+                    "text-[#2E7D32]",
+                    "font-semibold"
+                );
+
             }
+
         }
 
-        @if ($errors->has('role') || $errors->has('organization_name') || $errors->has('organization_address') || $errors->has('supporting_document'))
-            goToStep(2);
-        @endif
+        // Return to Step 2 when organization validation fails.
+        document.addEventListener('DOMContentLoaded', function () {
+
+            @if ($errors->has('phone') ||
+                 $errors->has('role') ||
+                 $errors->has('organization_name') ||
+                 $errors->has('address') ||
+                 $errors->has('verification_document'))
+
+                goToStep(2);
+
+            @endif
+
+        });
+
     </script>
+
 </body>
 </html>
