@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -11,6 +12,7 @@ Route::get('/', function () {
 
 // GUEST ROUTES (Login & Register)
 Route::middleware('guest')->group(function () {
+
     Route::get('/register', [AuthController::class, 'showRegister'])
         ->name('register');
 
@@ -28,32 +30,28 @@ Route::middleware('guest')->group(function () {
 // AUTHENTICATED ROUTES
 Route::middleware('auth')->group(function () {
 
-    // Unified Dashboard Redirect
+    // UNIFIED DASHBOARD
     Route::get('/dashboard', function () {
-        $user = Auth::user();
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.verifications');
-        }
         return view('dashboard');
     })->name('dashboard');
 
-    // ADMIN VERIFICATION MANAGEMENT ROUTES
-    Route::get('/admin/verifications', [AdminController::class, 'index'])->name('admin.verifications');
-    Route::get('/admin/verifications/{id}', [AdminController::class, 'show'])->name('admin.verifications.show');
-    Route::post('/admin/verifications/{id}/update', [AdminController::class, 'updateStatus'])->name('admin.verifications.update');
+    // ADMIN VERIFICATION MANAGEMENT
+    Route::get('/admin/verifications', [AdminController::class, 'index'])
+        ->name('admin.verifications');
 
-    // PROTECTED ACTION ROUTES (Only verified organizations & admins)
+    Route::get('/admin/verifications/{id}', [AdminController::class, 'show'])
+        ->name('admin.verifications.show');
+
+    Route::post('/admin/verifications/{id}/update', [AdminController::class, 'updateStatus'])
+        ->name('admin.verifications.update');
+
+    // PROTECTED ACTION ROUTES
     Route::middleware('verified.org')->group(function () {
-        // Place future Food Provider & Recipient action routes here
+        // Food Provider & Recipient Organization routes
     });
 
+    // LOGOUT
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');
 
-    // New Admin Verification Routes (Protected by 'auth')
-    Route::get('/admin/verifications', [AdminController::class, 'index'])
-        ->name('admin.verifications');
-        
-    Route::post('/admin/users/{id}/verify', [AdminController::class, 'updateVerificationStatus'])
-        ->name('admin.users.verify');
 });
