@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -20,6 +25,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
+
             'organization_name' => 'required|string|max:150',
 
             'role' => 'required|in:food_provider,recipient_organization',
@@ -39,30 +45,49 @@ class AuthController extends Controller
                 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
-        // Store verification document privately.
+        // Store the verification document privately.
         $documentPath = $validated['verification_document']
             ->store('verification-documents', 'local');
 
-        // Create user and organization information in users table.
-        User::create([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'organization_name' => $validated['organization_name'],
+        try {
+            DB::transaction(function () use ($validated, $documentPath) {
 
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+                // Create the user account.
+                $user = User::create([
+                    'first_name' => $validated['first_name'],
+                    'last_name' => $validated['last_name'],
 
-            'phone' => $validated['phone'] ?? null,
-            'address' => $validated['address'] ?? null,
+                    'email' => $validated['email'],
+                    'password' => Hash::make($validated['password']),
 
-            'role' => $validated['role'],
+                    'phone' => $validated['phone'] ?? null,
 
-            // Account status and verification status are separate.
-            'status' => 'active',
-            'verification_status' => 'pending',
+                    'role' => $validated['role'],
+                    'status' => 'active',
+                ]);
 
-            'verification_document' => $documentPath,
-        ]);
+                // Create the organization's information
+                // and connect it to the newly created user.
+                Organization::create([
+                    'user_id' => $user->user_id,
+
+                    'organization_name' => $validated['organization_name'],
+
+                    'organization_address' => $validated['address'] ?? null,
+
+                    'verification_document' => $documentPath,
+
+                    'verification_status' => 'Pending',
+                ]);
+            });
+
+        } catch (Throwable $exception) {
+
+            // Remove the uploaded document if database creation fails.
+            Storage::disk('local')->delete($documentPath);
+
+            throw $exception;
+        }
 
         return redirect()->route('login')
             ->with(
@@ -103,11 +128,6 @@ class AuthController extends Controller
             }
 
             $request->session()->regenerate();
-
-            // All authorized roles enter the dashboard.
-            if ($user->isAdministrator()) {
-                return redirect()->route('dashboard');
-            }
 
             return redirect()->route('dashboard');
         }

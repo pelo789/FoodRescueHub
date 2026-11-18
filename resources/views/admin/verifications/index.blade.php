@@ -126,9 +126,10 @@
                     <thead>
                         <tr class="bg-gray-50 border-b border-gray-200 text-gray-600 uppercase">
                             <th class="p-3">Organization Name</th>
-                            <th class="p-3">Type</th>
+                            <th class="p-3">Role</th>
                             <th class="p-3">Representative</th>
                             <th class="p-3">Email / Phone</th>
+                            <th class="p-3">Address</th>
                             <th class="p-3">Document</th>
                             <th class="p-3">Date Registered</th>
                             <th class="p-3 text-right">Actions</th>
@@ -146,30 +147,37 @@
                                     {{ $organization->organization_name ?? 'Not provided' }}
                                 </td>
 
-                                <!-- ORGANIZATION TYPE -->
+                                <!-- ROLE -->
                                 <td class="p-3 text-gray-600">
-                                    @if ($organization->role === 'food_provider')
+                                    @if ($organization->user?->role === 'food_provider')
                                         Food Provider
-                                    @elseif ($organization->role === 'recipient_organization')
+                                    @elseif ($organization->user?->role === 'recipient_organization')
                                         Recipient Organization
                                     @else
-                                        {{ $organization->role }}
+                                        Unknown
                                     @endif
                                 </td>
 
                                 <!-- REPRESENTATIVE -->
                                 <td class="p-3 text-gray-800">
-                                    {{ $organization->first_name }}
-                                    {{ $organization->last_name }}
+                                    {{ $organization->user?->first_name ?? 'N/A' }}
+                                    {{ $organization->user?->last_name ?? '' }}
                                 </td>
 
                                 <!-- CONTACT INFORMATION -->
                                 <td class="p-3 text-gray-600">
-                                    <div>{{ $organization->email }}</div>
+                                    <div>
+                                        {{ $organization->user?->email ?? 'No email' }}
+                                    </div>
 
                                     <div class="text-[10px] text-gray-400">
-                                        {{ $organization->phone ?? 'No phone provided' }}
+                                        {{ $organization->user?->phone ?? 'No phone provided' }}
                                     </div>
+                                </td>
+
+                                <!-- ORGANIZATION ADDRESS -->
+                                <td class="p-3 text-gray-600">
+                                    {{ $organization->organization_address ?? 'No address provided' }}
                                 </td>
 
                                 <!-- VERIFICATION DOCUMENT -->
@@ -179,6 +187,7 @@
 
                                         <a href="{{ route('admin.verifications.document', $organization->user_id) }}"
                                            target="_blank"
+                                           rel="noopener noreferrer"
                                            class="text-blue-600 hover:underline font-medium">
                                             View Document
                                         </a>
@@ -252,7 +261,7 @@
                         @empty
 
                             <tr>
-                                <td colspan="7" class="p-6 text-center text-gray-500">
+                                <td colspan="8" class="p-6 text-center text-gray-500">
                                     No organizations found under this verification status.
                                 </td>
                             </tr>

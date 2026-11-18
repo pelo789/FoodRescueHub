@@ -1,4 +1,5 @@
 
+
 @php
     $user = auth()->user();
 
@@ -8,19 +9,34 @@
     $isProvider = $role === 'food_provider';
     $isRecipient = $role === 'recipient_organization';
 
-    // Verification status is stored directly in the users table.
-    $verificationStatus = strtolower(trim($user->verification_status ?? 'pending'));
+    // Retrieve organization information from the organizations table.
+    $organization = $user->organization;
+
+    // Verification status now comes from the Organization model.
+    $verificationStatus = strtolower(
+        trim($organization->verification_status ?? 'pending')
+    );
+
     $isVerified = $verificationStatus === 'verified';
 
-    // Only administrators and verified organizations can access system features.
-    $canAccessFeatures = $isAdmin || $isVerified;
+    // Only administrators and verified organizations can access features.
+    $canAccessFeatures = $isAdmin || (
+        ($isProvider || $isRecipient) && $isVerified
+    );
 
-    $fullName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
+    // User's personal name.
+    $fullName = trim(
+        ($user->first_name ?? '') . ' ' . ($user->last_name ?? '')
+    );
 
     if ($fullName === '') {
         $fullName = $user->name ?? 'User';
     }
+
+    // Organization name comes from the organizations table.
+    $organizationName = $organization->organization_name ?? 'No organization registered';
 @endphp
+
 
 <!DOCTYPE html>
 <html lang="en">
