@@ -12,6 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('organizations', function (Blueprint $table) {
+            if (!Schema::hasColumn('organizations', 'organization_address')) {
+                $table->string('organization_address')->nullable()->after('organization_type');
+            } // safety check that asks the database if that column already exists before Laravel tries to add or delete it.
+
             //$table->string('organization_address')->after('organization_type');
         });
     }
@@ -22,7 +26,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('organizations', function (Blueprint $table) {
-            $table->dropColumn('organization_address');
+            if (Schema::hasColumn('organizations', 'organization_address')) {
+                $table->dropColumn('organization_address');
+            }
         });
     }
 };
