@@ -75,11 +75,11 @@
                         </p>
 
                         <div class="mt-6 flex flex-wrap gap-2.5">
-                            <span class="bg-white/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Restaurant</span>
-                            <span class="bg-white/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Bakery</span>
-                            <span class="bg-white/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Grocery Store</span>
-                            <span class="bg-white/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Catering Service</span>
-                            <span class="bg-white/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Recipient Organization</span>
+                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Restaurant</span>
+                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Bakery</span>
+                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Grocery Store</span>
+                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Catering Service</span>
+                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Recipient Organization</span>
                         </div>
 
                         <div class="mt-6 space-y-2 text-base font-medium text-green-50">
