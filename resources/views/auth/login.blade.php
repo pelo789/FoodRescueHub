@@ -75,11 +75,11 @@
                         </p>
 
                         <div class="mt-6 flex flex-wrap gap-2.5">
-                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Restaurant</span>
-                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Bakery</span>
-                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Grocery Store</span>
-                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Catering Service</span>
-                            <span class="bg-black/30 px-3.5 py-1.5 rounded-full text-sm font-medium">Recipient Organization</span>
+                            <span class="bg-black/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Restaurant</span>
+                            <span class="bg-black/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Bakery</span>
+                            <span class="bg-black/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Grocery Store</span>
+                            <span class="bg-black/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Catering Service</span>
+                            <span class="bg-black/15 px-3.5 py-1.5 rounded-full text-sm font-medium">Recipient Organization</span>
                         </div>
 
                         <div class="mt-6 space-y-2 text-base font-medium text-green-50">
@@ -96,7 +96,7 @@
                     </section>
 
                     <!-- SECTION 2: ABOUT -->
-                    <section id="about" class="min-h-[calc(100vh-8rem)] snap-start flex flex-col justify-center max-w-2xl mx-auto text-white">
+                    <section id="about" class="min-h-[calc(100vh-8rem)] snap-start flex flex-col justify-center max-w-2xl mx-auto text-white mt-16 pt-16">
                         <h2 class="text-3xl lg:text-4xl font-bold text-white mb-5">
                             About FoodRescue Hub
                         </h2>
@@ -129,7 +129,7 @@
                     </section>
 
                     <!-- SECTION 3: FEATURES -->
-                    <section class="min-h-[calc(100vh-8rem)] snap-start flex flex-col justify-center max-w-2xl mx-auto text-white">
+                    <section class="min-h-[calc(100vh-8rem)] snap-start flex flex-col justify-center max-w-2xl mx-auto text-white mt-16 pt-16">
                         <h2 class="text-3xl lg:text-4xl font-bold text-white mb-8">
                             Why Organizations Join FoodRescue Hub
                         </h2>
@@ -206,9 +206,9 @@
                             placeholder="Enter your password"
                             class="mt-1.5 block w-full rounded-md border border-gray-300 p-3 text-sm text-gray-900 focus:border-[#2E7D32] focus:ring-1 focus:ring-[#2E7D32] focus:outline-none">
 
-                        <div class="mt-4 rounded-lg bg-green-50 border border-green-200 p-3">
-                            <p class="text-xs sm:text-sm text-green-800 font-medium">
-                                Only verified organizations can participate in food redistribution activities.
+                        <div class="mt-4 rounded-lg p-3">
+                            <p class="italic text-xs sm:text-sm text-green-800 font-medium">
+                                (Only verified organizations can participate in food redistribution activities.)
                             </p>
                         </div>
 
