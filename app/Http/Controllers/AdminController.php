@@ -7,92 +7,97 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
     private function ensureAdmin()
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (!Auth::check() || !Auth::user()->isAdministrator()) {
             abort(403, 'Unauthorized action.');
         }
     }
 
-    // 1. VIEW VERIFICATION QUEUE (Uses INNER JOIN)
+    // 1. VIEW VERIFICATION QUEUE (INNER JOIN: organizations + users)
     public function index(Request $request)
     {
         $this->ensureAdmin();
 
         $status = $request->get('status', 'Pending');
 
-        // INNER JOIN between organizations and users
-        $organizations = Organization::join('users', 'organizations.user_id', '=', 'users.user_id')
+        $pendingUsers = DB::table('organizations')
+            ->join('users', 'organizations.user_id', '=', 'users.user_id')
             ->select(
-                'organizations.*',
-                'users.first_name',
-                'users.last_name',
-                'users.email',
-                'users.role',
-                'users.status as user_status'
-            )
-            ->when($status, function ($query, $status) {
-                return $query->where('organizations.verification_status', $status);
-            })
-            ->orderBy('organizations.created_at', 'desc')
-            ->paginate(10);
-
-        return view('admin.verifications.index', compact('organizations', 'status'));
-    }
-
-    // 2. VIEW ORGANIZATION DETAILS (Uses INNER JOIN)
-    public function show($id)
-    {
-        $this->ensureAdmin();
-
-        $organization = Organization::join('users', 'organizations.user_id', '=', 'users.user_id')
-            ->select(
-                'organizations.*',
+                'organizations.organization_id',
+                'organizations.organization_name',
+                'organizations.organization_address',
+                'organizations.verification_document',
+                'organizations.verification_status',
+                'organizations.verification_remarks',
+                'users.user_id',
                 'users.first_name',
                 'users.last_name',
                 'users.email',
                 'users.phone',
                 'users.role'
             )
-            ->where('organizations.organization_id', $id)
-            ->firstOrFail();
+            ->when($status, function ($query, $status) {
+                return $query->where('organizations.verification_status', $status);
+            })
+            ->orderBy('organizations.created_at', 'desc')
+            ->get();
 
-        return view('admin.verifications.show', compact('organization'));
+        return view('admin.verifications', compact('pendingUsers', 'status'));
     }
 
-    // 3. UPDATE VERIFICATION STATUS (Uses DB::transaction across related tables)
-    public function updateStatus(Request $request, $id)
+    // 2. VIEW PRIVATE VERIFICATION DOCUMENT
+    public function viewDocument($organizationId)
+    {
+        $this->ensureAdmin();
+
+        $organization = Organization::findOrFail($organizationId);
+
+        abort_unless(
+            $organization->verification_document && Storage::disk('local')->exists($organization->verification_document),
+            404,
+            'Verification document not found.'
+        );
+
+        return Storage::disk('local')->response($organization->verification_document);
+    }
+
+    // 3. UPDATE VERIFICATION STATUS (DB::transaction across organizations & users)
+    public function updateStatus(Request $request, $organizationId)
     {
         $this->ensureAdmin();
 
         $request->validate([
             'verification_status' => 'required|in:Verified,Rejected,Additional Information Required',
+            'verification_remarks' => 'nullable|string|max:500',
         ]);
 
-        DB::transaction(function () use ($request, $id) {
-            $organization = Organization::findOrFail($id);
+        DB::transaction(function () use ($request, $organizationId) {
+            $organization = Organization::findOrFail($organizationId);
             $organization->verification_status = $request->verification_status;
+            $organization->verification_remarks = $request->verification_remarks ?? null;
             $organization->save();
 
-            // Keep user account status consistent with verification status
-            if ($request->verification_status === 'Verified') {
-                User::where('user_id', $organization->user_id)->update(['status' => 'active']);
-            }
+            // Sync account status in users table for data consistency
+            $userStatus = $request->verification_status === 'Rejected' ? 'inactive' : 'active';
+            User::where('user_id', $organization->user_id)->update(['status' => $userStatus]);
         });
 
-        return redirect()->route('admin.verifications', ['status' => $request->verification_status])
+        return redirect()->route('admin.verifications.index')
             ->with('success', 'Organization verification status updated to ' . $request->verification_status . '.');
     }
 
-    // 4. VIEW ALL USERS (Uses LEFT JOIN so admins without an organization still appear)
+    // 4. VIEW ALL USERS (LEFT JOIN: users + organizations, includes admins)
     public function users()
     {
         $this->ensureAdmin();
 
-        $users = User::leftJoin('organizations', 'users.user_id', '=', 'organizations.user_id')
+        $users = DB::table('users')
+            ->leftJoin('organizations', 'users.user_id', '=', 'organizations.user_id')
             ->select(
                 'users.user_id',
                 'users.first_name',
@@ -104,7 +109,7 @@ class AdminController extends Controller
                 'organizations.verification_status'
             )
             ->orderBy('users.created_at', 'desc')
-            ->paginate(15);
+            ->get();
 
         return view('admin.users.index', compact('users'));
     }
