@@ -19,7 +19,7 @@ return new class extends Migration
                     ->onDelete('cascade');
 
             $table->string('organization_name');
-            $table->string('organization_type');
+            $table->string('organization_type')->nullable();
             $table->string('organization_address')->nullable(); // Good to have for completeness
             
             // Supporting verification document path
@@ -32,6 +32,7 @@ return new class extends Migration
                 'Rejected', 
                 'Additional Information Required'
             ])->default('Pending');
+            $table->text('verification_remarks')->nullable();
 
             $table->timestamps();
         });
