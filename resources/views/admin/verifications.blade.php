@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Organization Verifications</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-gray-100 font-sans antialiased">
 
@@ -47,7 +47,7 @@
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-600">Organization / Name</th>
+                                <th class="px-4 py-3 text-left font-semibold text-gray-600">Organization / Contact Person</th>
                                 <th class="px-4 py-3 text-left font-semibold text-gray-600">Role</th>
                                 <th class="px-4 py-3 text-left font-semibold text-gray-600">Contact / Address</th>
                                 <th class="px-4 py-3 text-left font-semibold text-gray-600">Verification Document</th>
@@ -58,7 +58,8 @@
                             @forelse($pendingUsers as $pendingUser)
                                 <tr>
                                     <td class="px-4 py-4">
-                                        <div class="font-medium text-gray-900">{{ $pendingUser->first_name }} {{ $pendingUser->last_name }}</div>
+                                        <div class="font-bold text-gray-900">{{ $pendingUser->organization_name }}</div>
+                                        <div class="text-xs text-gray-700">{{ $pendingUser->first_name }} {{ $pendingUser->last_name }}</div>
                                         <div class="text-xs text-gray-500">{{ $pendingUser->email }}</div>
                                     </td>
                                     <td class="px-4 py-4 text-gray-700 capitalize">
@@ -68,11 +69,11 @@
                                     </td>
                                     <td class="px-4 py-4 text-xs text-gray-600">
                                         <div>{{ $pendingUser->phone ?? 'No phone' }}</div>
-                                        <div class="truncate max-w-xs">{{ $pendingUser->address ?? 'No address' }}</div>
+                                        <div class="truncate max-w-xs">{{ $pendingUser->organization_address ?? 'No address' }}</div>
                                     </td>
                                     <td class="px-4 py-4">
-                                        @if($pendingUser->document_path)
-                                            <a href="{{ asset('storage/' . $pendingUser->document_path) }}" target="_blank" class="inline-flex items-center text-blue-600 hover:underline text-xs font-semibold">
+                                        @if($pendingUser->verification_document)
+                                            <a href="{{ route('admin.verifications.document', $pendingUser->organization_id) }}" target="_blank" class="inline-flex items-center text-blue-600 hover:underline text-xs font-semibold">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                 View Document
                                             </a>
@@ -82,7 +83,7 @@
                                     </td>
                                     <td class="px-4 py-4 text-right space-x-2">
                                         <!-- Approve Form -->
-                                        <form action="{{ route('admin.users.verify', $pendingUser->user_id) }}" method="POST" class="inline-block">
+                                        <form action="{{ route('admin.verifications.updateStatus', $pendingUser->organization_id) }}" method="POST" class="inline-block">
                                             @csrf
                                             <input type="hidden" name="verification_status" value="Verified">
                                             <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-semibold shadow-sm transition-colors">
@@ -91,7 +92,7 @@
                                         </form>
 
                                         <!-- Reject Form -->
-                                        <form action="{{ route('admin.users.verify', $pendingUser->user_id) }}" method="POST" class="inline-block">
+                                        <form action="{{ route('admin.verifications.updateStatus', $pendingUser->organization_id) }}" method="POST" class="inline-block">
                                             @csrf
                                             <input type="hidden" name="verification_status" value="Rejected">
                                             <button type="submit" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-semibold shadow-sm transition-colors">

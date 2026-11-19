@@ -1,9 +1,8 @@
-
 <?php
 
-use App\Http\Controllers\OrganizationVerificationController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Admin\VerificationController;
+use App\Http\Controllers\OrganizationVerificationController;
 use Illuminate\Support\Facades\Route;
 
 // ROOT ROUTE
@@ -36,36 +35,31 @@ Route::middleware(['auth', 'account.active'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    // ADMIN VERIFICATION MANAGEMENT
+    // ADMIN VERIFICATION & USER MANAGEMENT
     Route::middleware('administrator')
         ->prefix('admin')
         ->name('admin.')
         ->group(function () {
 
             Route::get('/verifications', [
-                VerificationController::class,
+                AdminController::class,
                 'index'
             ])->name('verifications.index');
 
-            Route::get('/verifications/{user}/document', [
-                VerificationController::class,
+            Route::get('/verifications/{organization}/document', [
+                AdminController::class,
                 'viewDocument'
             ])->name('verifications.document');
 
-            Route::patch('/verifications/{user}/approve', [
-                VerificationController::class,
-                'approve'
-            ])->name('verifications.approve');
+            Route::post('/verifications/{organization}/status', [
+                AdminController::class,
+                'updateStatus'
+            ])->name('verifications.updateStatus');
 
-            Route::patch('/verifications/{user}/reject', [
-                VerificationController::class,
-                'reject'
-            ])->name('verifications.reject');
-
-            Route::patch('/verifications/{user}/request-additional-information', [
-                VerificationController::class,
-                'requestAdditionalInformation'
-            ])->name('verifications.requestAdditionalInformation');
+            Route::get('/users', [
+                AdminController::class,
+                'users'
+            ])->name('users.index');
 
         });
 
