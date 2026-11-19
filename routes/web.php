@@ -67,6 +67,10 @@ Route::middleware(['auth', 'account.active'])->group(function () {
             ])->name('users.index');
 
         });
+        Route::get('/organization/verification/document', [
+            OrganizationVerificationController::class,
+            'viewOwnDocument'
+        ])->name('organization.verification.document');
 
     // ORGANIZATION VERIFICATION RESUBMISSION
     // Must remain outside organization.verified middleware.

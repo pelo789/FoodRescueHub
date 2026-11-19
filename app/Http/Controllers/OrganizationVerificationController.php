@@ -8,6 +8,18 @@ use Illuminate\Support\Facades\Storage;
 
 class OrganizationVerificationController extends Controller
 {
+    public function viewOwnDocument(Request $request)
+    {
+        $organization = $request->user()->organization;
+
+        abort_unless(
+            $organization && $organization->verification_document && Storage::disk('local')->exists($organization->verification_document),
+            404,
+            'Verification document not found.'
+        );
+
+        return Storage::disk('local')->response($organization->verification_document);
+    }
     /**
      * Resubmit an organization's verification document.
      */

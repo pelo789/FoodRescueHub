@@ -93,13 +93,14 @@ class AdminController extends Controller
     }
 
     // 3. UPDATE VERIFICATION STATUS (DB::transaction across organizations & users)
+    // UPDATE VERIFICATION STATUS (Keeps verification_status separate from users.status per BR-M05)
     public function updateStatus(Request $request, $organizationId)
     {
         $this->ensureAdmin();
 
         $request->validate([
             'verification_status' => 'required|in:Verified,Rejected,Additional Information Required',
-            'verification_remarks' => 'nullable|string|max:500',
+            'verification_remarks' => 'required_if:verification_status,Rejected,Additional Information Required|nullable|string|max:500',
         ]);
 
         DB::transaction(function () use ($request, $organizationId) {
@@ -107,15 +108,12 @@ class AdminController extends Controller
             $organization->verification_status = $request->verification_status;
             $organization->verification_remarks = $request->verification_remarks ?? null;
             $organization->save();
-
-            // Sync account status in users table for data consistency
-            $userStatus = $request->verification_status === 'Rejected' ? 'inactive' : 'active';
-            User::where('user_id', $organization->user_id)->update(['status' => $userStatus]);
         });
 
-        return redirect()->route('admin.verifications.index')
+        return redirect()->route('admin.verifications.index', ['status' => $request->verification_status])
             ->with('success', 'Organization verification status updated to ' . $request->verification_status . '.');
     }
+
 
     // 4. VIEW ALL USERS (LEFT JOIN: users + organizations, includes admins)
     public function users()

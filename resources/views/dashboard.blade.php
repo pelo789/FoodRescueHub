@@ -263,6 +263,19 @@
                                 <span class="text-slate-500 font-medium block mb-1">Organization Address</span>
                                 <span class="text-sm font-semibold text-slate-900">{{ $organization->organization_address ?? 'Not provided' }}</span>
                             </div>
+                                                        <div class="md:col-span-2">
+                                <span class="text-slate-500 font-medium block mb-1">Submitted Verification Document</span>
+                                @if ($organization->verification_document)
+                                    <a href="{{ route('organization.verification.document') }}"
+                                       target="_blank"
+                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold rounded-lg border border-slate-300 transition-colors">
+                                        View / Download Uploaded Proof &nearr;
+                                    </a>
+                                @else
+                                    <span class="text-slate-400 italic">No document uploaded</span>
+                                @endif
+                            </div>
+
                         </div>
                     </div>
 
