@@ -2,117 +2,129 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Organization Verifications</title>
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Organization Verifications - FoodRescue Hub</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-gray-100 font-sans antialiased">
+<body class="bg-slate-50 font-sans min-h-screen flex flex-col antialiased">
 
-    <div class="min-h-screen flex flex-col">
-        <!-- Top Navigation Bar -->
-        <header class="bg-white shadow">
-            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-                <h1 class="text-xl font-bold text-gray-800">FoodRescue Hub — Admin Portal</h1>
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-600">Admin: {{ auth()->user()->first_name }}</span>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="text-sm text-red-600 hover:underline">Logout</button>
-                    </form>
-                </div>
+    @include('partials.sidebar')
+
+    <div class="ml-64 flex-1 flex flex-col">
+
+        <!-- HEADER -->
+        <header class="bg-white border-b border-slate-200 px-8 py-4">
+            <div class="max-w-5xl mx-auto">
+                <h1 class="text-lg font-bold text-slate-900">Organization Verifications</h1>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    Review organization registrations, inspect documents, and manage verification statuses.
+                </p>
             </div>
         </header>
 
-        <!-- Main Content Area -->
-        <main class="max-w-7xl mx-auto px-4 py-8 grow w-full">
-            
-            <!-- Success / Error Alerts -->
-            @if(session('success'))
-                <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
+        <!-- MAIN CONTENT -->
+        <main class="p-8 flex-1">
+            <div class="max-w-5xl mx-auto space-y-6">
 
-            <div class="bg-white shadow rounded-lg p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-900">Pending Organization Verifications</h2>
-                        <p class="text-xs text-gray-500">Review pending registrations and approve or reject their access.</p>
+                @if (session('success'))
+                    <div class="rounded-xl bg-emerald-100 border border-emerald-200 p-4 text-sm text-emerald-800 font-medium">
+                        {{ session('success') }}
                     </div>
-                    <a href="{{ route('dashboard') }}" class="text-sm text-blue-600 hover:underline">&larr; Back to Dashboard</a>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-600">Organization / Contact Person</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-600">Role</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-600">Contact / Address</th>
-                                <th class="px-4 py-3 text-left font-semibold text-gray-600">Verification Document</th>
-                                <th class="px-4 py-3 text-right font-semibold text-gray-600">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
-                            @forelse($pendingUsers as $pendingUser)
-                                <tr>
-                                    <td class="px-4 py-4">
-                                        <div class="font-bold text-gray-900">{{ $pendingUser->organization_name }}</div>
-                                        <div class="text-xs text-gray-700">{{ $pendingUser->first_name }} {{ $pendingUser->last_name }}</div>
-                                        <div class="text-xs text-gray-500">{{ $pendingUser->email }}</div>
-                                    </td>
-                                    <td class="px-4 py-4 text-gray-700 capitalize">
-                                        <span class="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                            {{ str_replace('_', ' ', $pendingUser->role) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-4 text-xs text-gray-600">
-                                        <div>{{ $pendingUser->phone ?? 'No phone' }}</div>
-                                        <div class="truncate max-w-xs">{{ $pendingUser->organization_address ?? 'No address' }}</div>
-                                    </td>
-                                    <td class="px-4 py-4">
-                                        @if($pendingUser->verification_document)
-                                            <a href="{{ route('admin.verifications.document', $pendingUser->organization_id) }}" target="_blank" class="inline-flex items-center text-blue-600 hover:underline text-xs font-semibold">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                View Document
-                                            </a>
-                                        @else
-                                            <span class="text-gray-400 text-xs italic">No document uploaded</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-4 text-right space-x-2">
-                                        <!-- Approve Form -->
-                                        <form action="{{ route('admin.verifications.updateStatus', $pendingUser->organization_id) }}" method="POST" class="inline-block">
-                                            @csrf
-                                            <input type="hidden" name="verification_status" value="Verified">
-                                            <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-semibold shadow-sm transition-colors">
-                                                Approve
-                                            </button>
-                                        </form>
+                @endif
 
-                                        <!-- Reject Form -->
-                                        <form action="{{ route('admin.verifications.updateStatus', $pendingUser->organization_id) }}" method="POST" class="inline-block">
-                                            @csrf
-                                            <input type="hidden" name="verification_status" value="Rejected">
-                                            <button type="submit" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-semibold shadow-sm transition-colors">
-                                                Reject
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">
-                                        🎉 All caught up! There are no pending organization verifications at the moment.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <!-- STATUS FILTER TABS -->
+                @php
+                    $tabs = [
+                        'Pending' => 'Pending Review',
+                        'Additional Information Required' => 'Additional Info Required',
+                        'Verified' => 'Verified',
+                        'Rejected' => 'Rejected',
+                    ];
+                @endphp
+
+                <div class="flex flex-wrap gap-2">
+                    @foreach ($tabs as $tabValue => $tabLabel)
+                        <a href="{{ route('admin.verifications.index', ['status' => $tabValue]) }}"
+                           class="px-3.5 py-2 rounded-lg text-xs font-semibold border transition-colors {{ $status === $tabValue ? 'bg-[#2E7D32] text-white border-[#2E7D32]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100' }}">
+                            {{ $tabLabel }}
+                        </a>
+                    @endforeach
                 </div>
+                <!-- ORGANIZATIONS TABLE -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200 text-xs">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-3.5 text-left font-semibold text-slate-600">Organization / Contact</th>
+                                    <th class="px-4 py-3.5 text-left font-semibold text-slate-600">Role</th>
+                                    <th class="px-4 py-3.5 text-left font-semibold text-slate-600">Status</th>
+                                    <th class="px-4 py-3.5 text-left font-semibold text-slate-600">Document</th>
+                                    <th class="px-4 py-3.5 text-right font-semibold text-slate-600">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                @forelse ($pendingUsers as $pendingUser)
+                                    <tr class="hover:bg-slate-50/70 transition-colors">
+                                        <td class="px-4 py-4">
+                                            <div class="font-bold text-slate-900 text-sm">{{ $pendingUser->organization_name }}</div>
+                                            <div class="text-slate-600 mt-0.5">{{ $pendingUser->first_name }} {{ $pendingUser->last_name }} • {{ $pendingUser->email }}</div>
+                                        </td>
+
+                                        <td class="px-4 py-4 capitalize text-slate-700 font-medium">
+                                            {{ str_replace('_', ' ', $pendingUser->role) }}
+                                        </td>
+
+                                        <td class="px-4 py-4">
+                                            <x-verification-badge :status="$pendingUser->verification_status" />
+                                        </td>
+
+                                        <td class="px-4 py-4">
+                                            @if ($pendingUser->verification_document)
+                                                <a href="{{ route('admin.verifications.document', $pendingUser->organization_id) }}"
+                                                   target="_blank"
+                                                   class="text-[#2E7D32] hover:underline font-semibold">
+                                                    View File &nearr;
+                                                </a>
+                                            @else
+                                                <span class="text-slate-400 italic">None</span>
+                                            @endif
+                                        </td>
+
+                                        <td class="px-4 py-4 text-right space-x-1.5 whitespace-nowrap">
+                                            <a href="{{ route('admin.verifications.show', $pendingUser->organization_id) }}"
+                                               class="inline-block px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 rounded-lg font-semibold transition-colors">
+                                                Details
+                                            </a>
+
+                                            @if ($pendingUser->verification_status !== 'Verified')
+                                                <form action="{{ route('admin.verifications.updateStatus', $pendingUser->organization_id) }}" method="POST" class="inline-block">
+                                                    @csrf
+                                                    <input type="hidden" name="verification_status" value="Verified">
+                                                    <button type="submit"
+                                                            onclick="return confirm('Approve {{ addslashes($pendingUser->organization_name) }}?')"
+                                                            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition-colors cursor-pointer">
+                                                        Approve
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-10 text-center text-slate-400">
+                                            No organizations found under <strong>{{ $status }}</strong>.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </main>
+
     </div>
 
 </body>

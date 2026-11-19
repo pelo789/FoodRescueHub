@@ -46,6 +46,11 @@ Route::middleware(['auth', 'account.active'])->group(function () {
                 'index'
             ])->name('verifications.index');
 
+            Route::get('/verifications/{organization}', [
+                AdminController::class,
+                'show'
+            ])->name('verifications.show');
+
             Route::get('/verifications/{organization}/document', [
                 AdminController::class,
                 'viewDocument'
