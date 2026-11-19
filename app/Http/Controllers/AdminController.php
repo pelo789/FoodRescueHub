@@ -50,6 +50,32 @@ class AdminController extends Controller
         return view('admin.verifications', compact('pendingUsers', 'status'));
     }
 
+        // VIEW SINGLE ORGANIZATION DETAILS (INNER JOIN: organizations + users)
+    public function show($organizationId)
+    {
+        $this->ensureAdmin();
+
+        $organization = DB::table('organizations')
+            ->join('users', 'organizations.user_id', '=', 'users.user_id')
+            ->select(
+                'organizations.*',
+                'users.first_name',
+                'users.last_name',
+                'users.email',
+                'users.phone',
+                'users.role',
+                'users.status as user_status',
+                'users.created_at as user_created_at'
+            )
+            ->where('organizations.organization_id', $organizationId)
+            ->first();
+
+        abort_if(!$organization, 404, 'Organization not found.');
+
+        return view('admin.organization-details', compact('organization'));
+    }
+
+
     // 2. VIEW PRIVATE VERIFICATION DOCUMENT
     public function viewDocument($organizationId)
     {
