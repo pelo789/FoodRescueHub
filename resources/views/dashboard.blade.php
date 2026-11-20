@@ -1,3 +1,4 @@
+
 @php
     $user = auth()->user();
     $role = strtolower(str_replace(' ', '_', trim($user->role ?? '')));
@@ -38,6 +39,7 @@
         }
     </style>
 </head>
+
 <body class="bg-[#f3f6f4] text-[#14281d] font-sans min-h-screen flex flex-col antialiased">
 
     @include('partials.sidebar')
@@ -50,19 +52,27 @@
                 <h1 class="text-base font-bold text-[#14281d]">
                     Dashboard
                 </h1>
+
                 <span class="text-[#d5dfd8]">/</span>
+
                 <span class="text-sm text-[#4a5d50]">
-                    @if ($isAdmin) Administrator
-                    @elseif ($isProvider) Food Provider
-                    @elseif ($isRecipient) Recipient Organization
-                    @else {{ ucfirst($user->role) }}
+                    @if ($isAdmin)
+                        Administrator
+                    @elseif ($isProvider)
+                        Food Provider
+                    @elseif ($isRecipient)
+                        Recipient Organization
+                    @else
+                        {{ ucfirst($user->role) }}
                     @endif
                 </span>
             </div>
 
-            <!-- SINGLE PRIMARY CTA (Von Restorff Effect: Solid #2E7D32) -->
+            <!-- ROLE-BASED HEADER ACTION -->
             <div class="flex items-center gap-3">
+
                 @if ($isAdmin)
+
                     <a href="{{ route('admin.verifications.index') }}"
                        class="min-h-10 px-4 py-2 bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-sm font-semibold rounded-lg inline-flex items-center gap-2 transition-colors">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -71,8 +81,10 @@
                         </svg>
                         <span>Review Queue ({{ $pendingCount }})</span>
                     </a>
+
                 @elseif ($isProvider && $isVerified)
-                    <a href="#"
+
+                    <a href="{{ route('food-listings.create') }}"
                        class="min-h-10 px-4 py-2 bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-sm font-semibold rounded-lg inline-flex items-center gap-2 transition-colors">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19" />
@@ -80,8 +92,10 @@
                         </svg>
                         <span>Post Surplus Food</span>
                     </a>
+
                 @elseif ($isRecipient && $isVerified)
-                    <a href="#"
+
+                    <a href="{{ route('food-listings.index') }}"
                        class="min-h-10 px-4 py-2 bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-sm font-semibold rounded-lg inline-flex items-center gap-2 transition-colors">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8" />
@@ -89,7 +103,9 @@
                         </svg>
                         <span>Browse Available Food</span>
                     </a>
+
                 @elseif ($organization && $organization->verification_document)
+
                     <a href="{{ route('organization.verification.document') }}"
                        target="_blank"
                        class="min-h-10 px-4 py-2 bg-[#ffffff] hover:bg-[#e8efe9] text-[#14281d] border border-[#d5dfd8] text-sm font-medium rounded-lg inline-flex items-center gap-2 transition-colors">
@@ -99,9 +115,12 @@
                         </svg>
                         <span>View Uploaded Proof</span>
                     </a>
+
                 @endif
+
             </div>
         </header>
+
         <!-- MAIN WORKSPACE -->
         <main class="p-8 flex-1">
             <div class="max-w-6xl space-y-6">
@@ -111,6 +130,7 @@
                     <h2 class="text-xl font-bold text-[#14281d] tracking-tight text-left">
                         Welcome back, {{ $fullName }}
                     </h2>
+
                     <p class="text-sm text-[#4a5d50] mt-1 text-left">
                         @if ($isAdmin)
                             Monitor organization verifications, user accounts, and platform activity.
@@ -144,13 +164,17 @@
 
                 <!-- KPI METRIC ROW -->
                 @if ($isAdmin)
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
                         <div class="bg-[#ffffff] border border-[#d5dfd8] rounded-xl p-6">
                             <span class="block text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">
                                 Pending Verifications
                             </span>
+
                             <div class="mt-2 flex items-baseline justify-between">
                                 <span class="text-3xl font-bold text-[#14281d]">{{ $pendingCount }}</span>
+
                                 <a href="{{ route('admin.verifications.index', ['status' => 'Pending']) }}"
                                    class="text-xs font-semibold text-[#2E7D32] hover:underline">
                                     Open Queue &rarr;
@@ -162,8 +186,10 @@
                             <span class="block text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">
                                 Verified Organizations
                             </span>
+
                             <div class="mt-2 flex items-baseline justify-between">
                                 <span class="text-3xl font-bold text-[#14281d]">{{ $verifiedCount }}</span>
+
                                 <a href="{{ route('admin.verifications.index', ['status' => 'Verified']) }}"
                                    class="text-xs font-medium text-[#4a5d50] hover:text-[#14281d]">
                                     View All
@@ -175,22 +201,28 @@
                             <span class="block text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">
                                 Total Registered Users
                             </span>
+
                             <div class="mt-2 flex items-baseline justify-between">
                                 <span class="text-3xl font-bold text-[#14281d]">{{ $totalUsersCount }}</span>
+
                                 <a href="{{ route('admin.users.index') }}"
                                    class="text-xs font-medium text-[#4a5d50] hover:text-[#14281d]">
                                     Directory
                                 </a>
                             </div>
                         </div>
+
                     </div>
 
                 @elseif ($organization)
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
                         <div class="bg-[#ffffff] border border-[#d5dfd8] rounded-xl p-6">
                             <span class="block text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">
                                 Verification Status
                             </span>
+
                             <div class="mt-3">
                                 <x-verification-badge :status="$organization->verification_status" />
                             </div>
@@ -200,9 +232,12 @@
                             <span class="block text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">
                                 {{ $isProvider ? 'Active Food Listings' : 'Active Food Requests' }}
                             </span>
+
                             <div class="mt-2 flex items-baseline gap-2">
                                 <span class="text-3xl font-bold text-[#14281d]">0</span>
-                                <span class="text-xs text-[#4a5d50]">{{ $isVerified ? 'Ready to create' : 'Locked until verified' }}</span>
+                                <span class="text-xs text-[#4a5d50]">
+                                    {{ $isVerified ? 'Ready to create' : 'Locked until verified' }}
+                                </span>
                             </div>
                         </div>
 
@@ -210,90 +245,134 @@
                             <span class="block text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">
                                 Member Since
                             </span>
+
                             <div class="mt-2">
                                 <span class="text-2xl font-bold text-[#14281d]">
                                     {{ $organization->created_at ? $organization->created_at->format('M d, Y') : '—' }}
                                 </span>
                             </div>
                         </div>
+
                     </div>
+
                     <!-- VERIFICATION PROGRESS CONTAINER -->
                     <div class="bg-[#ffffff] border border-[#d5dfd8] rounded-xl divide-y divide-[#d5dfd8]">
+
                         <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                             <div>
-                                <h3 class="text-base font-bold text-[#14281d] text-left">Verification Progress</h3>
+                                <h3 class="text-base font-bold text-[#14281d] text-left">
+                                    Verification Progress
+                                </h3>
+
                                 <p class="text-xs text-[#4a5d50] mt-0.5 text-left">
                                     Three-step review process required before participating in food redistribution.
                                 </p>
                             </div>
+
                             <x-verification-badge :status="$organization->verification_status" />
                         </div>
 
                         <!-- 3-STEP HORIZONTAL PROGRESS BAR -->
                         <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#d5dfd8]">
+
                             <div class="p-5 flex items-start gap-3">
-                                <span class="w-6 h-6 rounded-full bg-[#e8f5e9] text-[#2E7D32] text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                                <span class="w-6 h-6 rounded-full bg-[#e8f5e9] text-[#2E7D32] text-xs font-bold flex items-center justify-center shrink-0">
+                                    1
+                                </span>
+
                                 <div>
-                                    <p class="text-sm font-semibold text-[#14281d] text-left">Registration Submitted</p>
-                                    <p class="text-xs text-[#4a5d50] mt-0.5 text-left">Account details and proof uploaded.</p>
+                                    <p class="text-sm font-semibold text-[#14281d] text-left">
+                                        Registration Submitted
+                                    </p>
+
+                                    <p class="text-xs text-[#4a5d50] mt-0.5 text-left">
+                                        Account details and proof uploaded.
+                                    </p>
                                 </div>
                             </div>
 
                             <div class="p-5 flex items-start gap-3">
-                                <span class="w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shrink-0 {{ $isVerified ? 'bg-[#e8f5e9] text-[#2E7D32]' : ($verificationStatus === 'rejected' ? 'bg-[#fee2e2] text-[#b91c1c]' : ($verificationStatus === 'additional information required' ? 'bg-[#fef3c7] text-[#b45309]' : 'bg-[#e8efe9] text-[#4a5d50]')) }}">2</span>
+                                <span class="w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shrink-0 {{ $isVerified ? 'bg-[#e8f5e9] text-[#2E7D32]' : ($verificationStatus === 'rejected' ? 'bg-[#fee2e2] text-[#b91c1c]' : ($verificationStatus === 'additional information required' ? 'bg-[#fef3c7] text-[#b45309]' : 'bg-[#e8efe9] text-[#4a5d50]')) }}">
+                                    2
+                                </span>
+
                                 <div>
-                                    <p class="text-sm font-semibold text-[#14281d] text-left">Administrator Review</p>
+                                    <p class="text-sm font-semibold text-[#14281d] text-left">
+                                        Administrator Review
+                                    </p>
+
                                     <p class="text-xs text-[#4a5d50] mt-0.5 text-left">
-                                        @if ($isVerified) Approved by administrator.
-                                        @elseif ($verificationStatus === 'additional information required') Action required: see remarks below.
-                                        @elseif ($verificationStatus === 'rejected') Application declined.
-                                        @else In queue for document verification.
+                                        @if ($isVerified)
+                                            Approved by administrator.
+                                        @elseif ($verificationStatus === 'additional information required')
+                                            Action required: see remarks below.
+                                        @elseif ($verificationStatus === 'rejected')
+                                            Application declined.
+                                        @else
+                                            In queue for document verification.
                                         @endif
                                     </p>
                                 </div>
                             </div>
 
                             <div class="p-5 flex items-start gap-3">
-                                <span class="w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shrink-0 {{ $isVerified ? 'bg-[#e8f5e9] text-[#2E7D32]' : 'bg-[#e8efe9] text-[#4a5d50]' }}">3</span>
+                                <span class="w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center shrink-0 {{ $isVerified ? 'bg-[#e8f5e9] text-[#2E7D32]' : 'bg-[#e8efe9] text-[#4a5d50]' }}">
+                                    3
+                                </span>
+
                                 <div>
-                                    <p class="text-sm font-semibold text-[#14281d] text-left">Redistribution Access</p>
+                                    <p class="text-sm font-semibold text-[#14281d] text-left">
+                                        Redistribution Access
+                                    </p>
+
                                     <p class="text-xs text-[#4a5d50] mt-0.5 text-left">
                                         {{ $isVerified ? 'All platform features unlocked.' : 'Unlocks automatically upon approval.' }}
                                     </p>
                                 </div>
                             </div>
+
                         </div>
+
                         <!-- STATUS MESSAGE / ACTION SECTION -->
                         <div class="p-6">
+
                             @if ($isVerified)
+
                                 <p class="text-sm text-[#4a5d50] leading-relaxed text-left">
                                     Your organization is verified and active. Use the navigation menu on the left to manage your food rescue operations.
                                 </p>
 
                             @elseif ($verificationStatus === 'pending')
+
                                 <p class="text-sm text-[#4a5d50] leading-relaxed text-left">
                                     Your verification document is currently under review by an administrator. You may inspect your uploaded file using the button in the top bar while waiting.
                                 </p>
 
                             @elseif ($verificationStatus === 'rejected')
+
                                 <div class="space-y-2">
                                     <p class="text-sm font-semibold text-[#b91c1c] text-left">
                                         Verification Request Rejected
                                     </p>
+
                                     <p class="text-sm text-[#4a5d50] leading-relaxed text-left">
                                         {{ $organization->verification_remarks ?: 'Your application did not meet the verification requirements. Please contact the administrator for further guidance.' }}
                                     </p>
                                 </div>
 
                             @elseif ($verificationStatus === 'additional information required')
+
                                 <div class="space-y-5">
+
                                     <div>
                                         <span class="inline-block px-2.5 py-1 rounded-md text-xs font-semibold bg-[#fef3c7] text-[#b45309] mb-2">
                                             Action Required
                                         </span>
+
                                         <p class="text-sm font-semibold text-[#14281d] text-left">
                                             Administrator Remarks:
                                         </p>
+
                                         <p class="text-sm text-[#4a5d50] mt-1 leading-relaxed whitespace-pre-line text-left">
                                             {{ $organization->verification_remarks ?: 'Please upload a clearer or updated verification document.' }}
                                         </p>
@@ -303,20 +382,26 @@
                                           method="POST"
                                           enctype="multipart/form-data"
                                           class="pt-4 border-t border-[#d5dfd8] space-y-4 max-w-lg">
+
                                         @csrf
 
                                         <div>
-                                            <label for="verification_document" class="block text-xs font-semibold uppercase tracking-wider text-[#4a5d50] mb-2">
+                                            <label for="verification_document"
+                                                   class="block text-xs font-semibold uppercase tracking-wider text-[#4a5d50] mb-2">
                                                 Upload Updated Document (PDF, JPG, PNG • Max 5 MB)
                                             </label>
+
                                             <input type="file"
                                                    id="verification_document"
                                                    name="verification_document"
                                                    accept=".pdf,.jpg,.jpeg,.png"
                                                    required
                                                    class="block w-full min-h-10 text-sm text-[#14281d] bg-[#e8efe9] border border-[#d5dfd8] rounded-lg px-3 py-2">
+
                                             @error('verification_document')
-                                                <p class="text-xs text-[#b91c1c] mt-1.5 font-medium">{{ $message }}</p>
+                                                <p class="text-xs text-[#b91c1c] mt-1.5 font-medium">
+                                                    {{ $message }}
+                                                </p>
                                             @enderror
                                         </div>
 
@@ -325,37 +410,63 @@
                                                 class="min-h-10 px-4 py-2 bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer">
                                             Submit Updated Document
                                         </button>
+
                                     </form>
                                 </div>
+
                             @endif
+
                         </div>
                     </div>
-                    <!-- ORGANIZATION DETAILS SECTION (Hairline Key-Value List) -->
+
+                    <!-- ORGANIZATION DETAILS SECTION -->
                     <div class="bg-[#ffffff] border border-[#d5dfd8] rounded-xl divide-y divide-[#d5dfd8]">
+
                         <div class="px-6 py-4">
-                            <h3 class="text-base font-bold text-[#14281d] text-left">Organization Details</h3>
+                            <h3 class="text-base font-bold text-[#14281d] text-left">
+                                Organization Details
+                            </h3>
                         </div>
 
                         <dl class="divide-y divide-[#d5dfd8] text-sm">
-                            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">Organization Name</dt>
-                                <dd class="sm:col-span-2 font-medium text-[#14281d] text-left">{{ $organizationName }}</dd>
-                            </div>
 
                             <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">Representative</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">
+                                    Organization Name
+                                </dt>
+
                                 <dd class="sm:col-span-2 font-medium text-[#14281d] text-left">
-                                    {{ $fullName }}
-                                    <span class="text-[#4a5d50] font-normal ml-2">({{ $user->email }}{{ $user->phone ? ' • ' . $user->phone : '' }})</span>
+                                    {{ $organizationName }}
                                 </dd>
                             </div>
 
                             <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">Address</dt>
-                                <dd class="sm:col-span-2 font-medium text-[#14281d] text-left">{{ $organization->organization_address ?? 'Not provided' }}</dd>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">
+                                    Representative
+                                </dt>
+
+                                <dd class="sm:col-span-2 font-medium text-[#14281d] text-left">
+                                    {{ $fullName }}
+
+                                    <span class="text-[#4a5d50] font-normal ml-2">
+                                        ({{ $user->email }}{{ $user->phone ? ' • ' . $user->phone : '' }})
+                                    </span>
+                                </dd>
                             </div>
+
+                            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-[#4a5d50]">
+                                    Address
+                                </dt>
+
+                                <dd class="sm:col-span-2 font-medium text-[#14281d] text-left">
+                                    {{ $organization->organization_address ?? 'Not provided' }}
+                                </dd>
+                            </div>
+
                         </dl>
                     </div>
+
                 @endif
 
             </div>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FoodListingController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OrganizationVerificationController;
@@ -82,10 +83,10 @@ Route::middleware(['auth', 'account.active'])->group(function () {
     // ORGANIZATION VERIFICATION PROTECTED ROUTES
     Route::middleware('organization.verified')->group(function () {
 
-        // Food Provider and Recipient Organization
-        // Redistribution feature routes will go here.
+    // FOOD LISTING MANAGEMENT
+    Route::resource('food-listings', FoodListingController::class);
 
-    });
+});
 
     // LOGOUT
     Route::post('/logout', [AuthController::class, 'logout'])
