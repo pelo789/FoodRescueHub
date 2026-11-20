@@ -37,7 +37,7 @@ class FoodListingController extends Controller
             abort(403, 'You are not authorized to view food listings.');
         }
 
-        return view('food-listings.index', compact('foodListings'));
+        return view('provider.listings.index', compact('foodListings'));
     }
 
     /**
@@ -47,7 +47,7 @@ class FoodListingController extends Controller
     {
         $this->ensureFoodProvider();
 
-        return view('food-listings.create');
+        return view('provider.listings.create');
     }
 
     /**
@@ -127,7 +127,9 @@ class FoodListingController extends Controller
             abort(403, 'You are not authorized to view this listing.');
         }
 
-        return view('food-listings.show', compact('foodListing'));
+        return view('provider.listings.show', [
+            'listing' => $foodListing,
+        ]);
     }
 
     /**
@@ -145,7 +147,9 @@ class FoodListingController extends Controller
             'Withdrawn listings cannot be edited.'
         );
 
-        return view('food-listings.edit', compact('foodListing'));
+        return view('provider.listings.edit', [
+            'listing' => $foodListing,
+        ]);
     }
 
     /**
